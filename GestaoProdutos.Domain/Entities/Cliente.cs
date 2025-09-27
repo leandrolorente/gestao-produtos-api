@@ -8,9 +8,9 @@ namespace GestaoProdutos.Domain.Entities;
 public class Cliente : BaseEntity
 {
     public string Nome { get; set; } = string.Empty;
-    public Email Email { get; set; } = new Email(string.Empty);
+    public Email? Email { get; set; }
     public string Telefone { get; set; } = string.Empty;
-    public CpfCnpj CpfCnpj { get; set; } = new CpfCnpj(string.Empty);
+    public CpfCnpj? CpfCnpj { get; set; }
     public Endereco Endereco { get; set; } = new Endereco();
     public TipoCliente Tipo { get; set; }
     public DateTime? UltimaCompra { get; set; }

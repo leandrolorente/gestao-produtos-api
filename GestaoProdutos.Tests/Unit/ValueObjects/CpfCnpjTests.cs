@@ -50,8 +50,8 @@ public class CpfCnpjTests
     [Theory]
     [InlineData("123")]           // Muito curto
     [InlineData("123456789")]     // 9 dígitos
-    [InlineData("12345678901")]   // 12 dígitos
-    [InlineData("123456789012")]  // 13 dígitos
+    [InlineData("123456789012")]  // 12 dígitos
+    [InlineData("12345678901234567")] // 17 dígitos
     [InlineData("123456789012345")] // 15 dígitos
     public void CpfCnpj_WithInvalidLength_ShouldThrowArgumentException(string invalidCpfCnpj)
     {

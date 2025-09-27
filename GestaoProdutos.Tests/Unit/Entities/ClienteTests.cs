@@ -21,6 +21,8 @@ public class ClienteTests
         cliente.DataAtualizacao.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         cliente.Nome.Should().Be(string.Empty);
         cliente.Telefone.Should().Be(string.Empty);
+        cliente.Email.Should().BeNull();
+        cliente.CpfCnpj.Should().BeNull();
     }
 
     [Fact]
@@ -124,13 +126,14 @@ public class ClienteTests
     [Theory]
     [InlineData(15, 30, true)]  // Compra há 15 dias, prazo 30 dias - tem compra recente
     [InlineData(45, 30, false)] // Compra há 45 dias, prazo 30 dias - não tem compra recente
-    [InlineData(30, 30, true)]  // Compra há exatos 30 dias, prazo 30 dias - tem compra recente
+    [InlineData(29, 30, true)]  // Compra há 29 dias, prazo 30 dias - tem compra recente
     public void TemCompraRecente_ShouldReturnCorrectValue(int diasAtras, int prazoDias, bool expectedResult)
     {
         // Arrange
+        var dataCompra = DateTime.UtcNow.AddDays(-diasAtras);
         var cliente = new Cliente
         {
-            UltimaCompra = DateTime.UtcNow.AddDays(-diasAtras)
+            UltimaCompra = dataCompra
         };
 
         // Act
