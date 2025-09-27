@@ -1,0 +1,17 @@
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\bin\Debug\net9.0\GestaoProdutos.Infrastructure.deps.json
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\bin\Debug\net9.0\GestaoProdutos.Infrastructure.dll
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\bin\Debug\net9.0\GestaoProdutos.Infrastructure.pdb
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\bin\Debug\net9.0\GestaoProdutos.Application.dll
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\bin\Debug\net9.0\GestaoProdutos.Domain.dll
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\bin\Debug\net9.0\GestaoProdutos.Domain.pdb
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\bin\Debug\net9.0\GestaoProdutos.Application.pdb
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\obj\Debug\net9.0\GestaoProdutos.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\obj\Debug\net9.0\GestaoProdutos.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\obj\Debug\net9.0\GestaoProdutos.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\obj\Debug\net9.0\GestaoProdutos.Infrastructure.AssemblyInfo.cs
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\obj\Debug\net9.0\GestaoProdutos.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\obj\Debug\net9.0\GestaoPr.759A1F1E.Up2Date
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\obj\Debug\net9.0\GestaoProdutos.Infrastructure.dll
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\obj\Debug\net9.0\refint\GestaoProdutos.Infrastructure.dll
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\obj\Debug\net9.0\GestaoProdutos.Infrastructure.pdb
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Infrastructure\obj\Debug\net9.0\ref\GestaoProdutos.Infrastructure.dll

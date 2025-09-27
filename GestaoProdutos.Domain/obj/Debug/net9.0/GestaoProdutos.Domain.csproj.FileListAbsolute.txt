@@ -1,0 +1,12 @@
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\GestaoProdutos.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\GestaoProdutos.Domain.AssemblyInfoInputs.cache
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\GestaoProdutos.Domain.AssemblyInfo.cs
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\GestaoProdutos.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\bin\Debug\net9.0\GestaoProdutos.Domain.deps.json
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\bin\Debug\net9.0\GestaoProdutos.Domain.dll
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\bin\Debug\net9.0\GestaoProdutos.Domain.pdb
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\GestaoProdutos.Domain.csproj.AssemblyReference.cache
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\GestaoProdutos.Domain.dll
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\refint\GestaoProdutos.Domain.dll
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\GestaoProdutos.Domain.pdb
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\ref\GestaoProdutos.Domain.dll

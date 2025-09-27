@@ -1,0 +1,113 @@
+using GestaoProdutos.Domain.Enums;
+
+namespace GestaoProdutos.Application.DTOs;
+
+// DTOs baseados no frontend Angular
+public record ProdutoDto
+{
+    public string Id { get; init; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
+    public string Sku { get; init; } = string.Empty;
+    public int Quantity { get; init; }
+    public decimal Price { get; init; }
+    public DateTime LastUpdated { get; init; }
+    public string? Categoria { get; init; }
+    public bool EstoqueBaixo { get; init; }
+}
+
+public record CreateProdutoDto
+{
+    public string Name { get; init; } = string.Empty;
+    public string Sku { get; init; } = string.Empty;
+    public int Quantity { get; init; }
+    public decimal Price { get; init; }
+    public string? Categoria { get; init; }
+    public string? Descricao { get; init; }
+    public decimal? PrecoCompra { get; init; }
+    public int? EstoqueMinimo { get; init; }
+}
+
+public record UpdateProdutoDto
+{
+    public string Name { get; init; } = string.Empty;
+    public int Quantity { get; init; }
+    public decimal Price { get; init; }
+    public string? Categoria { get; init; }
+    public string? Descricao { get; init; }
+    public decimal? PrecoCompra { get; init; }
+    public int? EstoqueMinimo { get; init; }
+}
+
+public record ClienteDto
+{
+    public string Id { get; init; } = string.Empty;
+    public string Nome { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
+    public string Telefone { get; init; } = string.Empty;
+    public string CpfCnpj { get; init; } = string.Empty;
+    public string Endereco { get; init; } = string.Empty;
+    public string Cidade { get; init; } = string.Empty;
+    public string Estado { get; init; } = string.Empty;
+    public string Cep { get; init; } = string.Empty;
+    public string Tipo { get; init; } = string.Empty; // "Pessoa Física" ou "Pessoa Jurídica"
+    public bool Ativo { get; init; }
+    public DateTime DataCadastro { get; init; }
+    public DateTime? UltimaCompra { get; init; }
+    public string? Observacoes { get; init; }
+}
+
+public record CreateClienteDto
+{
+    public string Nome { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
+    public string Telefone { get; init; } = string.Empty;
+    public string CpfCnpj { get; init; } = string.Empty;
+    public string Endereco { get; init; } = string.Empty;
+    public string Cidade { get; init; } = string.Empty;
+    public string Estado { get; init; } = string.Empty;
+    public string Cep { get; init; } = string.Empty;
+    public TipoCliente Tipo { get; init; }
+    public string? Observacoes { get; init; }
+}
+
+public record UpdateClienteDto
+{
+    public string Nome { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
+    public string Telefone { get; init; } = string.Empty;
+    public string Endereco { get; init; } = string.Empty;
+    public string Cidade { get; init; } = string.Empty;
+    public string Estado { get; init; } = string.Empty;
+    public string Cep { get; init; } = string.Empty;
+    public string? Observacoes { get; init; }
+}
+
+public record UserDto
+{
+    public string Id { get; init; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
+    public string Role { get; init; } = string.Empty; // "admin", "manager", "user"
+    public string? Avatar { get; init; }
+    public string Department { get; init; } = string.Empty;
+    public DateTime? LastLogin { get; init; }
+    public bool IsActive { get; init; }
+}
+
+public record DashboardStatsDto
+{
+    public int TotalProducts { get; init; }
+    public int LowStockProducts { get; init; }
+    public decimal TotalValue { get; init; }
+    public int RecentTransactions { get; init; }
+    public int PendingOrders { get; init; }
+    public IEnumerable<ProductSummaryDto> TopSellingProducts { get; init; } = new List<ProductSummaryDto>();
+}
+
+public record ProductSummaryDto
+{
+    public string Id { get; init; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
+    public int Quantity { get; init; }
+    public int Sales { get; init; }
+}
