@@ -10,3 +10,4 @@ C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Dom
 C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\refint\GestaoProdutos.Domain.dll
 C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\GestaoProdutos.Domain.pdb
 C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\ref\GestaoProdutos.Domain.dll
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Domain\obj\Debug\net9.0\GestaoProdutos.Domain.sourcelink.json

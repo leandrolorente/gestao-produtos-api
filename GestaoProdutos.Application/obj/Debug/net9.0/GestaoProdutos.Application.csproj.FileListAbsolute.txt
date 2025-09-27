@@ -13,3 +13,4 @@ C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.App
 C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Application\obj\Debug\net9.0\refint\GestaoProdutos.Application.dll
 C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Application\obj\Debug\net9.0\GestaoProdutos.Application.pdb
 C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Application\obj\Debug\net9.0\ref\GestaoProdutos.Application.dll
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.Application\obj\Debug\net9.0\GestaoProdutos.Application.sourcelink.json

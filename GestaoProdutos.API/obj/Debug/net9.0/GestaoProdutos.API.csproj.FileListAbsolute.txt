@@ -41,3 +41,4 @@ C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.API
 C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.API\obj\Debug\net9.0\GestaoProdutos.API.pdb
 C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.API\obj\Debug\net9.0\GestaoProdutos.API.genruntimeconfig.cache
 C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.API\obj\Debug\net9.0\ref\GestaoProdutos.API.dll
+C:\Users\Leandro\Desktop\Controle Estoque\gestao-produtos-api\GestaoProdutos.API\obj\Debug\net9.0\GestaoProdutos.API.sourcelink.json
