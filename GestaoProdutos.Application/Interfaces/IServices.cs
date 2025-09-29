@@ -47,6 +47,15 @@ public interface IDashboardService
     Task<IEnumerable<ProductSummaryDto>> GetTopSellingProductsAsync(int count = 5);
 }
 
+public interface IAuthService
+{
+    Task<LoginResponseDto> LoginAsync(LoginDto loginDto);
+    Task<UserDto> RegisterAsync(RegisterDto registerDto);
+    Task<bool> ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto);
+    Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
+    Task<bool> ChangePasswordAsync(string userId, ChangePasswordDto changePasswordDto);
+}
+
 // DTOs adicionais
 public record CreateUsuarioDto
 {

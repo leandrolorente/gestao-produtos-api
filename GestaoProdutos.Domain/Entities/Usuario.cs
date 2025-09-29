@@ -1,4 +1,4 @@
-using GestaoProdutos.Domain.Enums;
+ using GestaoProdutos.Domain.Enums;
 using GestaoProdutos.Domain.ValueObjects;
 
 namespace GestaoProdutos.Domain.Entities;

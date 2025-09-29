@@ -112,3 +112,44 @@ public record ProductSummaryDto
     public int Quantity { get; init; }
     public int Sales { get; init; }
 }
+
+// ===== AUTHENTICATION DTOs =====
+public record LoginDto
+{
+    public string Email { get; init; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
+}
+
+public record LoginResponseDto
+{
+    public string Token { get; init; } = string.Empty;
+    public DateTime ExpiresAt { get; init; }
+    public UserDto User { get; init; } = new UserDto();
+}
+
+public record RegisterDto
+{
+    public string Name { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
+    public string? Avatar { get; init; }
+    public string Department { get; init; } = string.Empty;
+}
+
+public record ForgotPasswordDto
+{
+    public string Email { get; init; } = string.Empty;
+}
+
+public record ResetPasswordDto
+{
+    public string Email { get; init; } = string.Empty;
+    public string Token { get; init; } = string.Empty;
+    public string NewPassword { get; init; } = string.Empty;
+}
+
+public record ChangePasswordDto
+{
+    public string CurrentPassword { get; init; } = string.Empty;
+    public string NewPassword { get; init; } = string.Empty;
+}
