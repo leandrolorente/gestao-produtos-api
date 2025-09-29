@@ -97,10 +97,36 @@ public class ProdutoRepository : BaseRepository<Produto>, IProdutoRepository
             .FirstOrDefaultAsync();
     }
 
+    public async Task<Produto?> GetProdutoPorBarcodeAsync(string barcode)
+    {
+        return await _collection
+            .Find(p => p.Barcode == barcode && p.Ativo)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<bool> SkuJaExisteAsync(string sku, string? produtoId = null)
     {
         var filter = Builders<Produto>.Filter.And(
             Builders<Produto>.Filter.Eq(p => p.Sku, sku),
+            Builders<Produto>.Filter.Eq(p => p.Ativo, true)
+        );
+
+        if (!string.IsNullOrEmpty(produtoId))
+        {
+            filter = Builders<Produto>.Filter.And(
+                filter,
+                Builders<Produto>.Filter.Ne(p => p.Id, produtoId)
+            );
+        }
+
+        var count = await _collection.CountDocumentsAsync(filter);
+        return count > 0;
+    }
+
+    public async Task<bool> BarcodeJaExisteAsync(string barcode, string? produtoId = null)
+    {
+        var filter = Builders<Produto>.Filter.And(
+            Builders<Produto>.Filter.Eq(p => p.Barcode, barcode),
             Builders<Produto>.Filter.Eq(p => p.Ativo, true)
         );
 

@@ -34,6 +34,12 @@ public class ProdutoService : IProdutoService
         return produto?.Ativo == true ? MapToDto(produto) : null;
     }
 
+    public async Task<ProdutoDto?> GetProdutoByBarcodeAsync(string barcode)
+    {
+        var produto = await _unitOfWork.Produtos.GetProdutoPorBarcodeAsync(barcode);
+        return produto?.Ativo == true ? MapToDto(produto) : null;
+    }
+
     public async Task<IEnumerable<ProdutoDto>> GetProdutosComEstoqueBaixoAsync()
     {
         var produtos = await _unitOfWork.Produtos.GetProdutosComEstoqueBaixoAsync();
@@ -54,10 +60,20 @@ public class ProdutoService : IProdutoService
             throw new InvalidOperationException("SKU já existe");
         }
 
+        // Validar se Barcode já existe (se foi fornecido)
+        if (!string.IsNullOrWhiteSpace(dto.Barcode))
+        {
+            if (await _unitOfWork.Produtos.BarcodeJaExisteAsync(dto.Barcode))
+            {
+                throw new InvalidOperationException("Código de barras já existe");
+            }
+        }
+
         var produto = new Produto
         {
             Nome = dto.Name,
             Sku = dto.Sku,
+            Barcode = dto.Barcode,
             Quantidade = dto.Quantity,
             Preco = dto.Price,
             Categoria = dto.Categoria,
@@ -80,7 +96,18 @@ public class ProdutoService : IProdutoService
             throw new ArgumentException("Produto não encontrado");
         }
 
+        // Validar se Barcode já existe (se foi fornecido e é diferente do atual)
+        if (!string.IsNullOrWhiteSpace(dto.Barcode) && dto.Barcode != produto.Barcode)
+        {
+            if (await _unitOfWork.Produtos.BarcodeJaExisteAsync(dto.Barcode, id))
+            {
+                throw new InvalidOperationException("Código de barras já existe");
+            }
+        }
+
+        // Atualizar propriedades
         produto.Nome = dto.Name;
+        produto.Barcode = dto.Barcode;
         produto.Quantidade = dto.Quantity;
         produto.Preco = dto.Price;
         produto.Categoria = dto.Categoria;
@@ -90,10 +117,24 @@ public class ProdutoService : IProdutoService
         produto.DataAtualizacao = DateTime.UtcNow;
         produto.UltimaAtualizacao = DateTime.UtcNow;
 
-        await _unitOfWork.Produtos.UpdateAsync(produto);
-        await _unitOfWork.SaveChangesAsync();
-
-        return MapToDto(produto);
+        try
+        {
+            await _unitOfWork.Produtos.UpdateAsync(produto);
+            await _unitOfWork.SaveChangesAsync();
+            
+            // Recarregar o produto para garantir que foi salvo
+            var produtoAtualizado = await _unitOfWork.Produtos.GetByIdAsync(id);
+            if (produtoAtualizado == null)
+            {
+                throw new InvalidOperationException("Produto não foi encontrado após atualização");
+            }
+            
+            return MapToDto(produtoAtualizado);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Erro ao atualizar produto: {ex.Message}", ex);
+        }
     }
 
     public async Task<bool> DeleteProdutoAsync(string id)
@@ -125,6 +166,7 @@ public class ProdutoService : IProdutoService
             Id = produto.Id,
             Name = produto.Nome,
             Sku = produto.Sku,
+            Barcode = produto.Barcode,
             Quantity = produto.Quantidade,
             Price = produto.Preco,
             LastUpdated = produto.UltimaAtualizacao,

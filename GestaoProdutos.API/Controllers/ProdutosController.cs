@@ -73,6 +73,26 @@ public class ProdutosController : ControllerBase
     }
 
     /// <summary>
+    /// Obter produto por código de barras
+    /// </summary>
+    [HttpGet("barcode/{barcode}")]
+    public async Task<ActionResult<ProdutoDto>> GetProdutoByBarcode(string barcode)
+    {
+        try
+        {
+            var produto = await _produtoService.GetProdutoByBarcodeAsync(barcode);
+            if (produto == null)
+                return NotFound(new { message = "Produto não encontrado" });
+
+            return Ok(produto);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Erro interno do servidor", details = ex.Message });
+        }
+    }
+
+    /// <summary>
     /// Obter produtos com estoque baixo
     /// </summary>
     [HttpGet("estoque-baixo")]

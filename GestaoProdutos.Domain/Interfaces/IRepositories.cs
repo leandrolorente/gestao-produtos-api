@@ -18,7 +18,9 @@ public interface IProdutoRepository : IRepository<Produto>
     Task<IEnumerable<Produto>> GetProdutosComEstoqueBaixoAsync();
     Task<IEnumerable<Produto>> GetProdutosPorCategoriaAsync(string categoria);
     Task<Produto?> GetProdutoPorSkuAsync(string sku);
+    Task<Produto?> GetProdutoPorBarcodeAsync(string barcode);
     Task<bool> SkuJaExisteAsync(string sku, string? produtoId = null);
+    Task<bool> BarcodeJaExisteAsync(string barcode, string? produtoId = null);
 }
 
 public interface IClienteRepository : IRepository<Cliente>
