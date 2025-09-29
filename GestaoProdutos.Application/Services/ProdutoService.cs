@@ -96,6 +96,15 @@ public class ProdutoService : IProdutoService
             throw new ArgumentException("Produto não encontrado");
         }
 
+        // Validar se SKU já existe (se foi alterado)
+        if (!string.IsNullOrWhiteSpace(dto.Sku) && dto.Sku != produto.Sku)
+        {
+            if (await _unitOfWork.Produtos.SkuJaExisteAsync(dto.Sku, id))
+            {
+                throw new InvalidOperationException("SKU já existe");
+            }
+        }
+
         // Validar se Barcode já existe (se foi fornecido e é diferente do atual)
         if (!string.IsNullOrWhiteSpace(dto.Barcode) && dto.Barcode != produto.Barcode)
         {
@@ -107,6 +116,7 @@ public class ProdutoService : IProdutoService
 
         // Atualizar propriedades
         produto.Nome = dto.Name;
+        produto.Sku = dto.Sku; // SKU agora editável
         produto.Barcode = dto.Barcode;
         produto.Quantidade = dto.Quantity;
         produto.Preco = dto.Price;

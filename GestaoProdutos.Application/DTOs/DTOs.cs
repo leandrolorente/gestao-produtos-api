@@ -32,6 +32,7 @@ public record CreateProdutoDto
 public record UpdateProdutoDto
 {
     public string Name { get; init; } = string.Empty;
+    public string Sku { get; init; } = string.Empty; // SKU agora editável
     public string? Barcode { get; init; } // Código de barras
     public int Quantity { get; init; }
     public decimal Price { get; init; }
