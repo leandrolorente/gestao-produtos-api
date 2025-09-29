@@ -34,6 +34,22 @@ public class Cliente : BaseEntity
         Telefone = telefone;
         DataAtualizacao = DateTime.UtcNow;
     }
+
+    public void AtualizarInformacoes(string nome, string email, string telefone, string cpfCnpj)
+    {
+        Nome = nome;
+        Email = string.IsNullOrWhiteSpace(email) ? null : new Email(email);
+        Telefone = telefone;
+        CpfCnpj = string.IsNullOrWhiteSpace(cpfCnpj) ? null : new CpfCnpj(cpfCnpj);
+        
+        // Atualizar o tipo automaticamente baseado no CPF/CNPJ
+        if (CpfCnpj != null)
+        {
+            Tipo = CpfCnpj.EhCpf ? TipoCliente.PessoaFisica : TipoCliente.PessoaJuridica;
+        }
+        
+        DataAtualizacao = DateTime.UtcNow;
+    }
     
     public bool TemCompraRecente(int dias = 30)
     {

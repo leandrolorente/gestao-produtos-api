@@ -85,7 +85,7 @@ public class ClienteService : IClienteService
             throw new ArgumentException("Cliente não encontrado");
         }
 
-        cliente.AtualizarInformacoes(dto.Nome, dto.Email, dto.Telefone);
+        cliente.AtualizarInformacoes(dto.Nome, dto.Email, dto.Telefone, dto.CpfCnpj);
         cliente.Endereco = new Endereco
         {
             Logradouro = dto.Endereco,
@@ -141,9 +141,9 @@ public class ClienteService : IClienteService
         {
             Id = cliente.Id,
             Nome = cliente.Nome,
-            Email = cliente.Email.Valor,
+            Email = cliente.Email?.Valor ?? string.Empty,
             Telefone = cliente.Telefone,
-            CpfCnpj = cliente.CpfCnpj.Valor,
+            CpfCnpj = cliente.CpfCnpj?.Valor ?? string.Empty,
             Endereco = cliente.Endereco.Logradouro,
             Cidade = cliente.Endereco.Cidade,
             Estado = cliente.Endereco.Estado,
