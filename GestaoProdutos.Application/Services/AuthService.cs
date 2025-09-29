@@ -69,31 +69,13 @@ public class AuthService : IAuthService
         }
     }
 
-    public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
+    public async Task<UserDto> GetCurrentUserAsync(string userId)
     {
         try
         {
-            // Verificar se email já existe
-            var usuariosExistentes = await _unitOfWork.Usuarios.GetAllAsync();
-            if (usuariosExistentes.Any(u => u.Email.Valor == registerDto.Email))
-                throw new InvalidOperationException("Email já está em uso");
-
-            // Criar novo usuário
-            var usuario = new Usuario
-            {
-                Nome = registerDto.Name,
-                Email = new Email(registerDto.Email),
-                Role = UserRole.User, // Usuário padrão
-                Avatar = registerDto.Avatar,
-                Departamento = registerDto.Department,
-                SenhaHash = CriptografarSenha(registerDto.Password),
-                Ativo = true,
-                DataCriacao = DateTime.UtcNow,
-                DataAtualizacao = DateTime.UtcNow
-            };
-
-            await _unitOfWork.Usuarios.CreateAsync(usuario);
-            await _unitOfWork.SaveChangesAsync();
+            var usuario = await _unitOfWork.Usuarios.GetByIdAsync(userId);
+            if (usuario == null || !usuario.Ativo)
+                throw new InvalidOperationException("Usuário não encontrado");
 
             return MapToUserDto(usuario);
         }
@@ -103,7 +85,34 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
-            throw new Exception($"Erro durante o registro: {ex.Message}");
+            throw new Exception($"Erro ao obter usuário atual: {ex.Message}");
+        }
+    }
+
+    public Task<bool> ValidateTokenAsync(string token)
+    {
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_jwtSecret);
+            
+            tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = true,
+                ValidIssuer = _configuration["JWT:Issuer"],
+                ValidateAudience = true,
+                ValidAudience = _configuration["JWT:Audience"],
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            }, out SecurityToken validatedToken);
+
+            return Task.FromResult(true);
+        }
+        catch
+        {
+            return Task.FromResult(false);
         }
     }
 
@@ -202,11 +211,11 @@ public class AuthService : IAuthService
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, usuario.Id),
-            new Claim(ClaimTypes.Name, usuario.Nome),
-            new Claim(ClaimTypes.Email, usuario.Email.Valor),
-            new Claim(ClaimTypes.Role, usuario.Role.ToString()),
-            new Claim("Department", usuario.Departamento)
+            new Claim("id", usuario.Id),
+            new Claim("name", usuario.Nome),
+            new Claim("email", usuario.Email.Valor),
+            new Claim("role", usuario.Role.ToString().ToLowerInvariant()),
+            new Claim("department", usuario.Departamento)
         };
 
         var token = new JwtSecurityToken(

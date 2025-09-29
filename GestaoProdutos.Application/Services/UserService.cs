@@ -4,16 +4,21 @@ using GestaoProdutos.Domain.Entities;
 using GestaoProdutos.Domain.Enums;
 using GestaoProdutos.Domain.Interfaces;
 using GestaoProdutos.Domain.ValueObjects;
+using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace GestaoProdutos.Application.Services;
 
 public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly string _jwtSecret;
 
-    public UserService(IUnitOfWork unitOfWork)
+    public UserService(IUnitOfWork unitOfWork, IConfiguration configuration)
     {
         _unitOfWork = unitOfWork;
+        _jwtSecret = configuration["JWT:Secret"] ?? throw new InvalidOperationException("JWT Secret não configurado");
     }
 
     public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
@@ -163,11 +168,8 @@ public class UserService : IUserService
 
     private string CriptografarSenha(string senha)
     {
-        using var sha256 = System.Security.Cryptography.SHA256.Create();
-        var salt = Guid.NewGuid().ToString();
-        var senhaComSalt = senha + salt;
-        var bytes = System.Text.Encoding.UTF8.GetBytes(senhaComSalt);
-        var hash = sha256.ComputeHash(bytes);
-        return Convert.ToBase64String(hash) + ":" + salt;
+        using var sha256 = SHA256.Create();
+        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(senha + _jwtSecret));
+        return Convert.ToBase64String(hashedBytes);
     }
 }

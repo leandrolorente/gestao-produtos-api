@@ -51,36 +51,6 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Registra um novo usuário no sistema
-    /// </summary>
-    /// <param name="registerDto">Dados do novo usuário</param>
-    /// <returns>Dados do usuário criado</returns>
-    [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
-    {
-        try
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var result = await _authService.RegisterAsync(registerDto);
-            return Created($"/api/users/{result.Id}", result);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new 
-            { 
-                message = "Erro interno do servidor",
-                details = ex.Message 
-            });
-        }
-    }
-
-    /// <summary>
     /// Solicita reset de senha via email
     /// </summary>
     /// <param name="forgotPasswordDto">Email do usuário</param>
@@ -152,7 +122,7 @@ public class AuthController : ControllerBase
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("id")?.Value;
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized(new { message = "Token inválido." });
 
@@ -183,27 +153,20 @@ public class AuthController : ControllerBase
     /// <returns>Dados do usuário logado</returns>
     [HttpGet("me")]
     [Authorize]
-    public ActionResult<object> GetCurrentUser()
+    public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
         try
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
-            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-            var userDepartment = User.FindFirst("Department")?.Value;
-
+            var userId = User.FindFirst("id")?.Value;
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized(new { message = "Token inválido." });
+                return Unauthorized(new { message = "Token inválido" });
 
-            return Ok(new
-            {
-                id = userId,
-                name = userName,
-                email = userEmail,
-                role = userRole?.ToLowerInvariant(),
-                department = userDepartment
-            });
+            var user = await _authService.GetCurrentUserAsync(userId);
+            return Ok(user);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { message = ex.Message });
         }
         catch (Exception ex)
         {
@@ -221,8 +184,67 @@ public class AuthController : ControllerBase
     /// <returns>Status da validação</returns>
     [HttpPost("validate-token")]
     [Authorize]
-    public ActionResult ValidateToken()
+    public async Task<ActionResult> ValidateToken()
     {
-        return Ok(new { message = "Token válido.", valid = true });
+        try
+        {
+            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+            if (authHeader?.StartsWith("Bearer ") == true)
+            {
+                var token = authHeader.Substring("Bearer ".Length).Trim();
+                var isValid = await _authService.ValidateTokenAsync(token);
+                return Ok(new { message = "Token válido.", valid = isValid });
+            }
+            
+            return BadRequest(new { message = "Token não fornecido.", valid = false });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new 
+            { 
+                message = "Erro interno do servidor",
+                details = ex.Message 
+            });
+        }
+    }
+
+    /// <summary>
+    /// ENDPOINT TEMPORÁRIO: Cria o primeiro usuário admin (apenas se não existir nenhum usuário)
+    /// </summary>
+    /// <param name="createDto">Dados do primeiro admin</param>
+    /// <returns>Dados do usuário criado</returns>
+    [HttpPost("setup-first-admin")]
+    public async Task<ActionResult<UserResponseDto>> SetupFirstAdmin([FromBody] UserCreateDto createDto)
+    {
+        try
+        {
+            // Inject UserService para verificar se já existe usuário
+            var userService = HttpContext.RequestServices.GetRequiredService<IUserService>();
+            
+            // Verificar se já existe algum usuário no sistema
+            var existingUsers = await userService.GetAllUsersAsync();
+            if (existingUsers.Any())
+            {
+                return BadRequest(new { message = "Sistema já possui usuários. Use o endpoint de criação normal." });
+            }
+
+            // Forçar role como Admin para o primeiro usuário
+            createDto = createDto with { Role = "admin" };
+            
+            var result = await userService.CreateUserAsync(createDto);
+            return Created("", result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new 
+            { 
+                message = "Erro interno do servidor",
+                details = ex.Message 
+            });
+        }
     }
 }

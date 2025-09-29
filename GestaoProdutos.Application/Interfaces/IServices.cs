@@ -51,8 +51,9 @@ public interface IDashboardService
 public interface IAuthService
 {
     Task<LoginResponseDto> LoginAsync(LoginDto loginDto);
-    Task<UserDto> RegisterAsync(RegisterDto registerDto);
     Task<bool> ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto);
     Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
     Task<bool> ChangePasswordAsync(string userId, ChangePasswordDto changePasswordDto);
+    Task<UserDto> GetCurrentUserAsync(string userId);
+    Task<bool> ValidateTokenAsync(string token);
 }

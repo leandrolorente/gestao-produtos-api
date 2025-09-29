@@ -6,7 +6,7 @@ namespace GestaoProdutos.Domain.Entities;
 public class Usuario : BaseEntity
 {
     public string Nome { get; set; } = string.Empty;
-    public Email Email { get; set; } = new Email(string.Empty);
+    public Email Email { get; set; } = null!; // Será inicializado após a criação
     public UserRole Role { get; set; }
     public string Avatar { get; set; } = string.Empty; // Removido nullable para garantir sempre ter um avatar
     public string Departamento { get; set; } = string.Empty;
