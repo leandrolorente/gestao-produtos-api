@@ -89,9 +89,10 @@ public record UserDto
     public string Name { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
     public string Role { get; init; } = string.Empty; // "admin", "manager", "user"
-    public string? Avatar { get; init; }
+    public string Avatar { get; init; } = string.Empty;
     public string Department { get; init; } = string.Empty;
     public DateTime? LastLogin { get; init; }
+    public DateTime? LastUpdated { get; init; }
     public bool IsActive { get; init; }
 }
 
@@ -132,7 +133,7 @@ public record RegisterDto
     public string Name { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
     public string Password { get; init; } = string.Empty;
-    public string? Avatar { get; init; }
+    public string Avatar { get; init; } = string.Empty;
     public string Department { get; init; } = string.Empty;
 }
 
@@ -152,4 +153,37 @@ public record ChangePasswordDto
 {
     public string CurrentPassword { get; init; } = string.Empty;
     public string NewPassword { get; init; } = string.Empty;
+}
+
+// ===== USER MANAGEMENT DTOs =====
+public record UserCreateDto
+{
+    public string Name { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
+    public string Avatar { get; init; } = string.Empty;
+    public string Department { get; init; } = string.Empty;
+    public string Role { get; init; } = "user"; // Default role
+}
+
+public record UserResponseDto
+{
+    public string Id { get; init; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
+    public string Avatar { get; init; } = string.Empty;
+    public string Department { get; init; } = string.Empty;
+    public string Role { get; init; } = string.Empty;
+    public DateTime? CreatedAt { get; init; }
+    public DateTime? UpdatedAt { get; init; }
+    public bool IsActive { get; init; }
+}
+
+public record UpdateUserDto
+{
+    public string Name { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
+    public string Avatar { get; init; } = string.Empty;
+    public string Department { get; init; } = string.Empty;
+    public string Role { get; init; } = string.Empty;
 }

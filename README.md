@@ -105,9 +105,10 @@ POST /api/auth/validate-token # Validar token JWT
 - Nome: string
 - Email: Email (Value Object)
 - Role: UserRole (Admin/Manager/User)
+- Avatar: string (URL da imagem)
 - Departamento: string
 - UltimoLogin: DateTime?
-- SenhaHash: string (SHA256)
+- SenhaHash: string (SHA256 + Salt)
 - Ativo: bool
 - DataCriacao/Atualizacao: DateTime
 ```
@@ -122,6 +123,16 @@ POST /api/auth/validate-token # Validar token JWT
 - `POST /change-password` - Alterar senha (🔒 autenticado)
 - `GET /me` - Dados do usuário logado (🔒 autenticado)
 - `POST /validate-token` - Validar token JWT (🔒 autenticado)
+
+### **👥 Usuários** (`/api/users`)
+- `GET /` - Listar todos os usuários (🔒 admin)
+- `GET /{id}` - Obter usuário por ID (🔒 próprio usuário ou admin)
+- `POST /` - Criar novo usuário (🔒 admin)
+- `PUT /{id}` - Atualizar usuário (🔒 próprio usuário ou admin)
+- `DELETE /{id}` - Desativar usuário (🔒 admin)
+- `PATCH /{id}/activate` - Reativar usuário (🔒 admin)
+- `GET /department/{department}` - Usuários por departamento (🔒 manager+)
+- `GET /role/{role}` - Usuários por role (🔒 admin)
 
 ### **📦 Produtos** (`/api/produtos`)
 - `GET /` - Listar todos os produtos

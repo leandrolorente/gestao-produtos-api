@@ -29,16 +29,17 @@ public interface IClienteService
     Task<bool> RegistrarCompraAsync(string id);
 }
 
-public interface IUsuarioService
+public interface IUserService
 {
-    Task<IEnumerable<UserDto>> GetAllUsuariosAsync();
-    Task<UserDto?> GetUsuarioByIdAsync(string id);
-    Task<UserDto?> GetUsuarioByEmailAsync(string email);
-    Task<IEnumerable<UserDto>> GetUsuariosPorRoleAsync(Domain.Enums.UserRole role);
-    Task<UserDto> CreateUsuarioAsync(CreateUsuarioDto dto);
-    Task<UserDto> UpdateUsuarioAsync(string id, UpdateUsuarioDto dto);
-    Task<bool> DeleteUsuarioAsync(string id);
-    Task<bool> ToggleStatusUsuarioAsync(string id);
+    Task<IEnumerable<UserResponseDto>> GetAllUsersAsync();
+    Task<UserResponseDto?> GetUserByIdAsync(string id);
+    Task<UserResponseDto?> GetUserByEmailAsync(string email);
+    Task<IEnumerable<UserResponseDto>> GetUsersByRoleAsync(string role);
+    Task<IEnumerable<UserResponseDto>> GetUsersByDepartmentAsync(string department);
+    Task<UserResponseDto> CreateUserAsync(UserCreateDto dto);
+    Task<UserResponseDto> UpdateUserAsync(string id, UpdateUserDto dto);
+    Task<bool> DeactivateUserAsync(string id);
+    Task<bool> ActivateUserAsync(string id);
 }
 
 public interface IDashboardService
@@ -54,21 +55,4 @@ public interface IAuthService
     Task<bool> ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto);
     Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
     Task<bool> ChangePasswordAsync(string userId, ChangePasswordDto changePasswordDto);
-}
-
-// DTOs adicionais
-public record CreateUsuarioDto
-{
-    public string Nome { get; init; } = string.Empty;
-    public string Email { get; init; } = string.Empty;
-    public Domain.Enums.UserRole Role { get; init; }
-    public string Departamento { get; init; } = string.Empty;
-    public string Senha { get; init; } = string.Empty;
-}
-
-public record UpdateUsuarioDto
-{
-    public string Nome { get; init; } = string.Empty;
-    public string Departamento { get; init; } = string.Empty;
-    public Domain.Enums.UserRole Role { get; init; }
 }

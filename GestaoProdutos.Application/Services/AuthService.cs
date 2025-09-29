@@ -252,6 +252,7 @@ public class AuthService : IAuthService
             Avatar = usuario.Avatar,
             Department = usuario.Departamento,
             LastLogin = usuario.UltimoLogin,
+            LastUpdated = usuario.DataAtualizacao,
             IsActive = usuario.Ativo
         };
     }

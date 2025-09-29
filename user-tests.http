@@ -1,0 +1,147 @@
+### Testes para User Management API
+### Base URL
+@baseUrl = http://localhost:5278
+@token = {{login.response.body.token}}
+
+### 1. Login para obter token (necessário para outros testes)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@empresa.com",
+  "password": "Admin123!"
+}
+
+### 2. Listar todos os usuários (apenas admins)
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{token}}
+
+### 3. Obter usuário por ID
+GET {{baseUrl}}/api/users/{{userId}}
+Authorization: Bearer {{token}}
+
+### 4. Criar novo usuário (apenas admins)
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "João Silva",
+  "email": "joao@empresa.com",
+  "password": "Joao123!",
+  "avatar": "https://via.placeholder.com/150/0000FF/808080?text=JS",
+  "department": "Vendas",
+  "role": "user"
+}
+
+### 5. Atualizar usuário
+PUT {{baseUrl}}/api/users/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "João Silva Santos",
+  "email": "joao.santos@empresa.com",
+  "avatar": "https://via.placeholder.com/150/FF0000/FFFFFF?text=JSS",
+  "department": "Vendas",
+  "role": "manager"
+}
+
+### 6. Desativar usuário (apenas admins)
+DELETE {{baseUrl}}/api/users/{{userId}}
+Authorization: Bearer {{token}}
+
+### 7. Reativar usuário (apenas admins)
+PATCH {{baseUrl}}/api/users/{{userId}}/activate
+Authorization: Bearer {{token}}
+
+### 8. Obter usuários por departamento
+GET {{baseUrl}}/api/users/department/Vendas
+Authorization: Bearer {{token}}
+
+### 9. Obter usuários por role
+GET {{baseUrl}}/api/users/role/manager
+Authorization: Bearer {{token}}
+
+### 10. Teste de acesso negado (usuário comum tentando listar todos)
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{userToken}}
+
+### ======== Exemplos de Criação de Usuários ========
+
+### Manager de TI
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Maria Costa",
+  "email": "maria@empresa.com",
+  "password": "Maria123!",
+  "avatar": "https://via.placeholder.com/150/00FF00/000000?text=MC",
+  "department": "TI",
+  "role": "manager"
+}
+
+### Usuário de Estoque
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Pedro Santos",
+  "email": "pedro@empresa.com", 
+  "password": "Pedro123!",
+  "avatar": "https://via.placeholder.com/150/FFFF00/000000?text=PS",
+  "department": "Estoque",
+  "role": "user"
+}
+
+### Admin de Sistema
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Ana Administradora",
+  "email": "ana@empresa.com",
+  "password": "Ana123!",
+  "avatar": "https://via.placeholder.com/150/FF00FF/FFFFFF?text=AA",
+  "department": "Administração",
+  "role": "admin"
+}
+
+### ======== Testes de Validação ========
+
+### Tentar criar usuário com email duplicado
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Email Duplicado",
+  "email": "admin@empresa.com",
+  "password": "Test123!",
+  "avatar": "https://via.placeholder.com/150",
+  "department": "Teste",
+  "role": "user"
+}
+
+### Tentar atualizar com dados inválidos
+PUT {{baseUrl}}/api/users/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "",
+  "email": "email-invalido",
+  "avatar": "",
+  "department": "",
+  "role": "role-inexistente"
+}
+
+### ======== Variáveis de Teste ========
+### Para usar essas requisições, substitua:
+### {{userId}} - pelo ID real de um usuário
+### {{token}} - pelo token obtido no login do admin
+### {{userToken}} - pelo token de um usuário comum (para testar permissões)
