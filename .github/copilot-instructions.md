@@ -21,15 +21,18 @@ Este projeto segue **Clean Architecture + DDD** com 4 camadas distintas:
 - Mapeamento manual via método `MapToDto()` nos Services
 
 ### Dependency Injection
-- Services: `IProdutoService`, `IClienteService` registrados como Scoped
+- Services: `IProdutoService`, `IClienteService`, `IAuthService` registrados como Scoped
 - Repository: `IUnitOfWork` como Scoped
 - MongoDB: `MongoDbContext` como Singleton com connection string e database name
+- JWT: `IConfiguration` para configurações de autenticação
 
 ### Controllers
 - Use `[ApiController]` e `[Route("api/[controller]")]`
 - Todos os métodos são async e retornam `ActionResult<T>`
 - Tratamento de erro padrão: try-catch com `StatusCode(500)` e mensagem estruturada
 - Documentação XML: `/// <summary>` para endpoints
+- **Autenticação JWT**: Use `[Authorize]` para endpoints protegidos
+- Claims de usuário: acessíveis via `HttpContext.User.Claims`
 
 ### MongoDB
 - Collections: `produtos`, `clientes`, `usuarios` (nomes em português)
@@ -61,6 +64,13 @@ dotnet restore
 - Connection string padrão: `mongodb://localhost:27017`  
 - Database: `GestaoProdutosDB`
 - Configurável via `appsettings.json` ou variáveis de ambiente
+
+## Autenticação JWT
+- **Pacotes**: `Microsoft.AspNetCore.Authentication.JwtBearer`, `System.IdentityModel.Tokens.Jwt`
+- **Security**: Senhas com SHA256 + Salt via `AuthService.HashPassword()`
+- **Claims**: Id, Name, Email, Role, Department no token
+- **Configuração**: JWT SecretKey, Issuer, Audience em `appsettings.json`
+- **Swagger**: Integração com Bearer token para teste de endpoints
 
 ## CORS
 Configurado para Angular em `localhost:4200` e `4201` - atualizar se necessário.

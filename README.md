@@ -1,8 +1,8 @@
 # Gestão Produtos API
 
-## 🚀 **Backend em C# com Clean Architecture, DDD e MongoDB**
+## 🚀 **Backend em C# com Clean Architecture, DDD, MongoDB e JWT Authentication**
 
-API REST desenvolvida para gerenciar produtos e clientes, usando as melhores práticas de arquitetura e desenvolvimento.
+API REST completa para gerenciar produtos, clientes e usuários com sistema de autenticação JWT robusto, usando as melhores práticas de arquitetura e desenvolvimento.
 
 ## 🏗️ **Arquitetura**
 
@@ -10,17 +10,26 @@ API REST desenvolvida para gerenciar produtos e clientes, usando as melhores pr�
 ```
 GestaoProdutos.API/          # Camada de apresentação (Web API)
 ├── Controllers/             # Controladores REST
+│   ├── ProdutosController   # CRUD de produtos
+│   ├── ClientesController   # CRUD de clientes  
+│   └── AuthController       # Autenticação JWT
 └── Program.cs              # Configuração da aplicação
 
 GestaoProdutos.Application/  # Camada de aplicação
 ├── DTOs/                   # Data Transfer Objects
 ├── Interfaces/             # Contratos de serviços
 └── Services/               # Implementação dos serviços
+    ├── ProdutoService      # Lógica de produtos
+    ├── ClienteService      # Lógica de clientes
+    └── AuthService         # Lógica de autenticação
 
 GestaoProdutos.Domain/       # Camada de domínio (Core)
 ├── Entities/               # Entidades de negócio
+│   ├── Produto            # Produto com métodos de domínio
+│   ├── Cliente            # Cliente com validações
+│   └── Usuario            # Usuário com roles e permissões
 ├── Enums/                  # Enumerações
-├── ValueObjects/           # Objetos de valor
+├── ValueObjects/           # Objetos de valor (Email, CpfCnpj)
 └── Interfaces/             # Contratos de repositórios
 
 GestaoProdutos.Infrastructure/ # Camada de infraestrutura
@@ -30,12 +39,36 @@ GestaoProdutos.Infrastructure/ # Camada de infraestrutura
 
 ## 🛠️ **Tecnologias Utilizadas**
 
-- **.NET 8** - Framework principal
+- **.NET 9** - Framework principal
 - **ASP.NET Core Web API** - API REST
+- **JWT Bearer Authentication** - Autenticação com tokens JWT
 - **MongoDB** - Banco de dados NoSQL
 - **MongoDB.Driver** - Driver oficial do MongoDB
-- **Swagger/OpenAPI** - Documentação automática
+- **Swagger/OpenAPI** - Documentação automática com autenticação
 - **CORS** - Habilitado para frontend Angular
+- **xUnit + FluentAssertions** - Testes automatizados
+
+## 🔐 **Sistema de Autenticação**
+
+### **JWT (JSON Web Tokens)**
+- ✅ **Login/Register** - Autenticação completa
+- ✅ **Password Hash** - Senhas seguras com SHA256
+- ✅ **Token Validation** - Middleware de validação
+- ✅ **Claims** - ID, Nome, Email, Role, Departamento
+- ✅ **Authorization** - Controle de acesso por roles
+- ✅ **Password Reset** - Recuperação de senha
+- ✅ **Swagger Integration** - Teste direto na documentação
+
+### **Endpoints de Autenticação**
+```
+POST /api/auth/login          # Login no sistema
+POST /api/auth/register       # Cadastrar usuário
+POST /api/auth/forgot-password # Solicitar reset de senha
+POST /api/auth/reset-password  # Resetar senha com token
+POST /api/auth/change-password # Alterar senha (autenticado)
+GET  /api/auth/me             # Dados do usuário logado
+POST /api/auth/validate-token # Validar token JWT
+```
 
 ## 📊 **Modelos de Dados**
 
@@ -63,9 +96,10 @@ GestaoProdutos.Infrastructure/ # Camada de infraestrutura
 - Tipo: TipoCliente (PF/PJ)
 - UltimaCompra: DateTime?
 - Ativo: bool
+- DataCriacao/Atualizacao: DateTime
 ```
 
-### **Usuário**
+### **Usuario**
 ```csharp
 - Id: string (ObjectId)
 - Nome: string
@@ -73,12 +107,23 @@ GestaoProdutos.Infrastructure/ # Camada de infraestrutura
 - Role: UserRole (Admin/Manager/User)
 - Departamento: string
 - UltimoLogin: DateTime?
+- SenhaHash: string (SHA256)
 - Ativo: bool
+- DataCriacao/Atualizacao: DateTime
 ```
 
-## 🌐 **Endpoints Principais**
+## 🌐 **Endpoints da API**
 
-### **Produtos** (`/api/produtos`)
+### **🔐 Autenticação** (`/api/auth`)
+- `POST /login` - Login no sistema (retorna JWT)
+- `POST /register` - Cadastrar novo usuário
+- `POST /forgot-password` - Solicitar reset de senha
+- `POST /reset-password` - Resetar senha com token
+- `POST /change-password` - Alterar senha (🔒 autenticado)
+- `GET /me` - Dados do usuário logado (🔒 autenticado)
+- `POST /validate-token` - Validar token JWT (🔒 autenticado)
+
+### **📦 Produtos** (`/api/produtos`)
 - `GET /` - Listar todos os produtos
 - `GET /{id}` - Obter produto por ID
 - `GET /sku/{sku}` - Obter produto por SKU
@@ -103,7 +148,7 @@ GestaoProdutos.Infrastructure/ # Camada de infraestrutura
 ## ⚙️ **Configuração e Execução**
 
 ### **Pré-requisitos**
-- .NET 8 SDK
+- .NET 9 SDK
 - MongoDB (local ou MongoDB Atlas)
 - Visual Studio Code ou Visual Studio
 
@@ -121,6 +166,12 @@ GestaoProdutos.Infrastructure/ # Camada de infraestrutura
   },
   "MongoDB": {
     "DatabaseName": "GestaoProdutosDB"
+  },
+  "JWT": {
+    "SecretKey": "SuaChaveSecretaSuperSegura123456789",
+    "Issuer": "GestaoProdutosAPI",
+    "Audience": "GestaoProdutosClient",
+    "ExpirationHours": 24
   }
 }
 ```
@@ -134,10 +185,18 @@ dotnet restore
 dotnet run --project GestaoProdutos.API
 
 # API executará em:
-# - HTTP: http://localhost:5000
-# - HTTPS: https://localhost:5001
-# - Swagger: https://localhost:5001 (raiz)
+# - HTTP: http://localhost:5278 (development)
+# - HTTPS: https://localhost:5001 (production)
+# - Swagger: http://localhost:5278 (raiz) - Acesso com autenticação JWT
 ```
+
+### **4. Acesso ao Swagger com Autenticação**
+1. Acesse `http://localhost:5278`
+2. Clique em **"Authorize"** no canto superior direito
+3. Primeiro, registre um usuário via endpoint `/api/auth/register`
+4. Depois faça login via `/api/auth/login` para obter o token
+5. Cole o token JWT no campo Authorization (formato: `Bearer seutoken`)
+6. Agora você pode acessar endpoints protegidos! 🔐
 
 ## 🔄 **Integração com Frontend Angular**
 
@@ -145,13 +204,24 @@ dotnet run --project GestaoProdutos.API
 - `http://localhost:4200` (dev padrão)
 - `http://localhost:4201` (dev alternativa)
 
+### **Autenticação JWT**
+O sistema está configurado para receber tokens JWT no header Authorization:
+```typescript
+// Configuração no Angular (service)
+const token = localStorage.getItem('jwt-token');
+const headers = new HttpHeaders({
+  'Authorization': `Bearer ${token}`,
+  'Content-Type': 'application/json'
+});
+```
+
 ### **Formato de DTOs compatível**
 Os DTOs foram criados seguindo exatamente a estrutura do frontend Angular:
 
 ```typescript
-// Frontend Angular (TypeScript)
+// Frontend Angular - Produto
 interface Product {
-  id: number;
+  id: string;
   name: string;
   sku: string;
   quantity: number;
@@ -159,18 +229,32 @@ interface Product {
   lastUpdated: Date;
 }
 
-// Backend C# (DTO)
-public record ProdutoDto {
-  public string Id { get; init; }
-  public string Name { get; init; }
-  public string Sku { get; init; }
-  public int Quantity { get; init; }
-  public decimal Price { get; init; }
-  public DateTime LastUpdated { get; init; }
+// Frontend Angular - Auth
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
 }
 ```
 
 ## 📋 **Features Implementadas**
+
+### **Autenticação e Segurança**
+- ✅ **JWT Authentication** completo
+- ✅ Sistema de login e registro
+- ✅ Recuperação de senha
+- ✅ Hash de senhas com SHA256 + Salt
+- ✅ Autorização baseada em Claims
+- ✅ Swagger UI com autenticação integrada
 
 ### **Domain-Driven Design**
 - ✅ Entidades com métodos de negócio
@@ -199,14 +283,15 @@ public record ProdutoDto {
 
 ## 🧪 **Próximos Passos**
 
-- [ ] Implementar autenticação JWT
-- [ ] Adicionar testes unitários e integração
+- [x] ~~Implementar autenticação JWT~~ ✅ **Concluído!**
+- [ ] Adicionar testes unitários e integração para Auth
 - [ ] Implementar cache com Redis
 - [ ] Adicionar logs estruturados (Serilog)
 - [ ] Implementar paginação
 - [ ] Adicionar métricas e monitoramento
+- [ ] Implementar refresh tokens
 - [ ] Deploy com Docker
 
 ---
 
-**Desenvolvido com Clean Architecture, DDD e MongoDB para integração perfeita com o frontend Angular existente!** 🚀
+**Desenvolvido com Clean Architecture, DDD, MongoDB e JWT Authentication para integração perfeita com o frontend Angular existente!** 🚀
