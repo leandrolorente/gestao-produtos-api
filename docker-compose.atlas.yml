@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # API usando MongoDB Atlas
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gestao-produtos-api-atlas
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__MongoDB: mongodb+srv://gestaoProdutosBD:427931%40%21%40@cluster0.y60kygq.mongodb.net/GestaoProdutosDB?retryWrites=true&w=majority&appName=Cluster0
+      MongoDB__DatabaseName: GestaoProdutosDB
+      JWT__Secret: sua-chave-super-secreta-para-desenvolvimento-com-pelo-menos-32-caracteres
+      JWT__Issuer: GestaoProdutosAPI
+      JWT__Audience: GestaoProdutosApp
+      CORS__AllowedOrigins: http://localhost:4200,http://localhost:4201,https://localhost:4200,https://localhost:4201
+    ports:
+      - "5000:8080"
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - gestao-produtos-network
+
+networks:
+  gestao-produtos-network:
+    driver: bridge

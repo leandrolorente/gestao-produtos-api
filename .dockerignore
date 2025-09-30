@@ -1,0 +1,76 @@
+# Ignorar arquivos desnecessários no build do Docker
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/node_modules/
+**/coverage/
+**/.nyc_output
+**/Dockerfile*
+**/.dockerignore
+**/.git/
+**/.gitignore
+**/README.md
+**/docker-compose*
+**/.env
+**/secrets.json
+
+# Logs
+**/logs/
+**/*.log
+
+# Runtime data
+**/pids
+**/*.pid
+**/*.seed
+**/*.pid.lock
+
+# Coverage directory used by tools like istanbul
+**/coverage
+
+# Dependency directories
+**/node_modules/
+
+# Optional npm cache directory
+**/.npm
+
+# Output of 'npm pack'
+**/*.tgz
+
+# Yarn Integrity file
+**/.yarn-integrity
+
+# dotenv environment variables file
+**/.env
+
+# Visual Studio temporary files
+**/[Tt]emp/
+**/[Tt]mp/
+**/*_i.c
+**/*_p.c
+**/*_i.h
+**/*.ilk
+**/*.meta
+**/*.obj
+**/*.pch
+**/*.pdb
+**/*.pgc
+**/*.pgd
+**/*.rsp
+**/*.sbr
+**/*.tlb
+**/*.tli
+**/*.tlh
+**/*.tmp
+**/*.tmp_proj
+**/*.log
+**/*.vspscc
+**/*.vssscc
+**/.builds
+**/*.pidb
+**/*.svclog
+**/*.scc
+
+# Test results
+**/[Tt]est[Rr]esult*/
+**/[Bb]uild[Ll]og.*

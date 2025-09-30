@@ -1,0 +1,38 @@
+# Configuração do Render para deploy automático
+services:
+  - type: web
+    name: gestao-produtos-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS  
+        value: http://+:8080
+      - key: ConnectionStrings__MongoDB
+        sync: false # Será configurado manualmente no dashboard
+      - key: MongoDB__DatabaseName
+        value: GestaoProdutosDB
+      - key: JWT__Secret
+        sync: false # Será configurado manualmente no dashboard
+      - key: JWT__Issuer
+        value: GestaoProdutosAPI
+      - key: JWT__Audience
+        value: GestaoProdutosApp
+      - key: CORS__AllowedOrigins
+        sync: false # Será configurado manualmente no dashboard
+    autoDeploy: true
+    buildFilter:
+      paths:
+      - GestaoProdutos.API/**
+      - GestaoProdutos.Application/**
+      - GestaoProdutos.Domain/**
+      - GestaoProdutos.Infrastructure/**
+      - Dockerfile
+      - "*.sln"
+      ignoredPaths:
+      - GestaoProdutos.Tests/**
+      - "**.md"
