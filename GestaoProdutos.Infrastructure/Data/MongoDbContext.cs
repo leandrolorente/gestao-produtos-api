@@ -16,6 +16,7 @@ public class MongoDbContext
     public IMongoCollection<Produto> Produtos => _database.GetCollection<Produto>("produtos");
     public IMongoCollection<Cliente> Clientes => _database.GetCollection<Cliente>("clientes");
     public IMongoCollection<Usuario> Usuarios => _database.GetCollection<Usuario>("usuarios");
+    public IMongoCollection<Venda> Vendas => _database.GetCollection<Venda>("vendas");
 
     // Método para criação de índices
     public async Task CreateIndexesAsync()

@@ -191,3 +191,96 @@ public record UpdateUserDto
     public string Department { get; init; } = string.Empty;
     public string Role { get; init; } = string.Empty;
 }
+
+// ===== SALES DTOs =====
+public record VendaItemDto
+{
+    public string Id { get; init; } = string.Empty;
+    public string ProdutoId { get; init; } = string.Empty;
+    public string ProdutoNome { get; init; } = string.Empty;
+    public string ProdutoSku { get; init; } = string.Empty;
+    public int Quantidade { get; init; }
+    public decimal PrecoUnitario { get; init; }
+    public decimal Subtotal { get; init; }
+}
+
+public record VendaDto
+{
+    public string Id { get; init; } = string.Empty;
+    public string Numero { get; init; } = string.Empty;
+    public string ClienteId { get; init; } = string.Empty;
+    public string ClienteNome { get; init; } = string.Empty;
+    public string ClienteEmail { get; init; } = string.Empty;
+    public IEnumerable<VendaItemDto> Items { get; init; } = new List<VendaItemDto>();
+    public decimal Subtotal { get; init; }
+    public decimal Desconto { get; init; }
+    public decimal Total { get; init; }
+    public string FormaPagamento { get; init; } = string.Empty;
+    public string Status { get; init; } = string.Empty;
+    public string? Observacoes { get; init; }
+    public string DataVenda { get; init; } = string.Empty;
+    public string? DataVencimento { get; init; }
+    public string? VendedorId { get; init; }
+    public string? VendedorNome { get; init; }
+    public string CreatedAt { get; init; } = string.Empty;
+    public string UpdatedAt { get; init; } = string.Empty;
+}
+
+public record CreateVendaDto
+{
+    public string ClienteId { get; init; } = string.Empty;
+    public IEnumerable<CreateVendaItemDto> Items { get; init; } = new List<CreateVendaItemDto>();
+    public decimal Desconto { get; init; }
+    public string FormaPagamento { get; init; } = string.Empty;
+    public string? Observacoes { get; init; }
+    public string? DataVencimento { get; init; }
+}
+
+public record CreateVendaItemDto
+{
+    public string ProdutoId { get; init; } = string.Empty;
+    public string ProdutoNome { get; init; } = string.Empty;
+    public string ProdutoSku { get; init; } = string.Empty;
+    public int Quantidade { get; init; }
+    public decimal PrecoUnitario { get; init; }
+    public decimal Subtotal { get; init; }
+}
+
+public record UpdateVendaDto
+{
+    public string Numero { get; init; } = string.Empty;
+    public string ClienteId { get; init; } = string.Empty;
+    public IEnumerable<VendaItemDto> Items { get; init; } = new List<VendaItemDto>();
+    public decimal Desconto { get; init; }
+    public string FormaPagamento { get; init; } = string.Empty;
+    public string Status { get; init; } = string.Empty;
+    public string? Observacoes { get; init; }
+    public string? DataVencimento { get; init; }
+    public string? VendedorId { get; init; }
+    public string? VendedorNome { get; init; }
+}
+
+public record VendasStatsDto
+{
+    public int TotalVendas { get; init; }
+    public int VendasHoje { get; init; }
+    public decimal FaturamentoMes { get; init; }
+    public decimal TicketMedio { get; init; }
+    public int VendasPendentes { get; init; }
+    public IEnumerable<TopClienteDto> TopClientes { get; init; } = new List<TopClienteDto>();
+    public IEnumerable<VendasPorMesDto> VendasPorMes { get; init; } = new List<VendasPorMesDto>();
+}
+
+public record TopClienteDto
+{
+    public string ClienteNome { get; init; } = string.Empty;
+    public int TotalCompras { get; init; }
+    public decimal ValorTotal { get; init; }
+}
+
+public record VendasPorMesDto
+{
+    public string Mes { get; init; } = string.Empty;
+    public int Vendas { get; init; }
+    public decimal Faturamento { get; init; }
+}

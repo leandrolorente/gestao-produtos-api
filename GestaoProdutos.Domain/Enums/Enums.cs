@@ -19,3 +19,26 @@ public enum StatusProduto
     Inativo = 2,
     Descontinuado = 3
 }
+
+/// <summary>
+/// Status possíveis para uma venda
+/// </summary>
+public enum StatusVenda
+{
+    Pendente = 1,
+    Confirmada = 2,
+    Cancelada = 3,
+    Finalizada = 4
+}
+
+/// <summary>
+/// Formas de pagamento disponíveis
+/// </summary>
+public enum FormaPagamento
+{
+    Dinheiro = 1,
+    CartaoCredito = 2,
+    CartaoDebito = 3,
+    PIX = 4,
+    Boleto = 5
+}
