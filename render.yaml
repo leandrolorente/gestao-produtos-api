@@ -23,7 +23,7 @@ services:
       - key: JWT__Audience
         value: GestaoProdutosApp
       - key: CORS__AllowedOrigins
-        sync: false # Será configurado manualmente no dashboard
+        value: https://gestao-produto-angular.netlify.app,https://68dc293a06973a00088ea346--gestao-produto-angular.netlify.app,http://localhost:4200,http://localhost:4201
     autoDeploy: true
     buildFilter:
       paths:
