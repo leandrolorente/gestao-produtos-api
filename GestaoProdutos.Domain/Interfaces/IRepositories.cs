@@ -51,8 +51,8 @@ public interface IVendaRepository : IRepository<Venda>
     Task<decimal> GetFaturamentoPorPeriodoAsync(DateTime dataInicio, DateTime dataFim);
     Task<string> GetProximoNumeroVendaAsync();
     Task<bool> NumeroVendaJaExisteAsync(string numero, string? vendaId = null);
-    Task<IEnumerable<dynamic>> GetTopClientesAsync(int quantidade = 10);
-    Task<IEnumerable<dynamic>> GetVendasPorMesAsync(int meses = 12);
+    Task<IEnumerable<TopClienteResult>> GetTopClientesAsync(int quantidade = 10);
+    Task<IEnumerable<VendasPorMesResult>> GetVendasPorMesAsync(int meses = 12);
 }
 
 public interface IUnitOfWork : IDisposable

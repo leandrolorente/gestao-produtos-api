@@ -179,7 +179,7 @@ public class VendaRepository : IVendaRepository
         };
 
         var result = await _collection.Aggregate<BsonDocument>(pipeline).FirstOrDefaultAsync();
-        return result?["total"].AsDecimal ?? 0;
+        return result != null ? ConvertToDecimal(result["total"]) : 0;
     }
 
     public async Task<string> GetProximoNumeroVendaAsync()
@@ -221,7 +221,7 @@ public class VendaRepository : IVendaRepository
         return await _collection.CountDocumentsAsync(filter) > 0;
     }
 
-    public async Task<IEnumerable<dynamic>> GetTopClientesAsync(int quantidade = 10)
+    public async Task<IEnumerable<TopClienteResult>> GetTopClientesAsync(int quantidade = 10)
     {
         var pipeline = new[]
         {
@@ -252,15 +252,15 @@ public class VendaRepository : IVendaRepository
         };
 
         var results = await _collection.Aggregate<BsonDocument>(pipeline).ToListAsync();
-        return results.Select(doc => new
+        return results.Select(doc => new TopClienteResult
         {
             ClienteNome = doc["clienteNome"].AsString,
             TotalCompras = doc["totalCompras"].AsInt32,
-            ValorTotal = doc["valorTotal"].AsDecimal
+            ValorTotal = ConvertToDecimal(doc["valorTotal"])
         });
     }
 
-    public async Task<IEnumerable<dynamic>> GetVendasPorMesAsync(int meses = 12)
+    public async Task<IEnumerable<VendasPorMesResult>> GetVendasPorMesAsync(int meses = 12)
     {
         var dataInicio = DateTime.UtcNow.AddMonths(-meses).Date;
         
@@ -319,12 +319,24 @@ public class VendaRepository : IVendaRepository
         };
 
         var results = await _collection.Aggregate<BsonDocument>(pipeline).ToListAsync();
-        return results.Select(doc => new
+        return results.Select(doc => new VendasPorMesResult
         {
             Mes = doc["mes"].AsString,
             Vendas = doc["vendas"].AsInt32,
-            Faturamento = doc["faturamento"].AsDecimal
+            Faturamento = ConvertToDecimal(doc["faturamento"])
         });
+    }
+
+    private static decimal ConvertToDecimal(BsonValue bsonValue)
+    {
+        return bsonValue.BsonType switch
+        {
+            BsonType.Decimal128 => bsonValue.AsDecimal,
+            BsonType.Double => (decimal)bsonValue.AsDouble,
+            BsonType.Int32 => (decimal)bsonValue.AsInt32,
+            BsonType.Int64 => (decimal)bsonValue.AsInt64,
+            _ => 0m
+        };
     }
 
     private async Task CreateIndexesAsync()

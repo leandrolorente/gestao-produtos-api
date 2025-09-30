@@ -386,17 +386,17 @@ public class VendaService : IVendaService
         var topClientes = (await _unitOfWork.Vendas.GetTopClientesAsync(5))
             .Select(c => new TopClienteDto
             {
-                ClienteNome = (string)(c.GetType().GetProperty("ClienteNome")?.GetValue(c) ?? ""),
-                TotalCompras = (int)(c.GetType().GetProperty("TotalCompras")?.GetValue(c) ?? 0),
-                ValorTotal = (decimal)(c.GetType().GetProperty("ValorTotal")?.GetValue(c) ?? 0m)
+                ClienteNome = c.ClienteNome,
+                TotalCompras = c.TotalCompras,
+                ValorTotal = c.ValorTotal
             });
 
         var vendasPorMes = (await _unitOfWork.Vendas.GetVendasPorMesAsync(6))
             .Select(v => new VendasPorMesDto
             {
-                Mes = (string)(v.GetType().GetProperty("Mes")?.GetValue(v) ?? ""),
-                Vendas = (int)(v.GetType().GetProperty("Vendas")?.GetValue(v) ?? 0),
-                Faturamento = (decimal)(v.GetType().GetProperty("Faturamento")?.GetValue(v) ?? 0m)
+                Mes = v.Mes,
+                Vendas = v.Vendas,
+                Faturamento = v.Faturamento
             });
 
         return new VendasStatsDto
