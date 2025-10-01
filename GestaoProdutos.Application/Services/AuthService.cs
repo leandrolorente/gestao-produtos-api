@@ -69,6 +69,61 @@ public class AuthService : IAuthService
         }
     }
 
+    public async Task<bool> LogoutAsync(LogoutDto logoutDto)
+    {
+        try
+        {
+            // Validar entrada
+            if (string.IsNullOrEmpty(logoutDto.UserId))
+                throw new ArgumentException("UserId é obrigatório para logout");
+
+            // Buscar usuário
+            var usuario = await _unitOfWork.Usuarios.GetByIdAsync(logoutDto.UserId);
+            if (usuario == null || !usuario.Ativo)
+                return false;
+
+            // Validar token se fornecido (verificação adicional de segurança)
+            if (!string.IsNullOrEmpty(logoutDto.Token))
+            {
+                var isValidToken = await ValidateTokenAsync(logoutDto.Token);
+                if (!isValidToken)
+                    throw new UnauthorizedAccessException("Token inválido para logout");
+            }
+
+            // Registrar logout para auditoria
+            usuario.RegistrarLogout();
+            
+            await _unitOfWork.Usuarios.UpdateAsync(usuario);
+            await _unitOfWork.SaveChangesAsync();
+
+            // Log para auditoria (opcional)
+            Console.WriteLine($"Logout realizado para usuário: {usuario.Nome} ({usuario.Email.Valor}) em {DateTime.UtcNow}");
+            
+            if (!string.IsNullOrEmpty(logoutDto.DeviceInfo))
+            {
+                Console.WriteLine($"Device Info: {logoutDto.DeviceInfo}");
+            }
+
+            // Nota: Como JWT é stateless, o token continuará válido até expirar
+            // O cliente deve remover o token do localStorage/sessionStorage
+            // Para invalidação imediata, seria necessário implementar uma blacklist de tokens
+
+            return true;
+        }
+        catch (ArgumentException)
+        {
+            throw;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Erro durante o logout: {ex.Message}");
+        }
+    }
+
     public async Task<UserDto> GetCurrentUserAsync(string userId)
     {
         try

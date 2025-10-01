@@ -11,6 +11,7 @@ public class Usuario : BaseEntity
     public string Avatar { get; set; } = string.Empty; // Removido nullable para garantir sempre ter um avatar
     public string Departamento { get; set; } = string.Empty;
     public DateTime? UltimoLogin { get; set; }
+    public DateTime? UltimoLogout { get; set; }
     public string SenhaHash { get; set; } = string.Empty;
     
     // Métodos de domínio
@@ -21,6 +22,12 @@ public class Usuario : BaseEntity
     public void RegistrarLogin()
     {
         UltimoLogin = DateTime.UtcNow;
+        DataAtualizacao = DateTime.UtcNow;
+    }
+    
+    public void RegistrarLogout()
+    {
+        UltimoLogout = DateTime.UtcNow;
         DataAtualizacao = DateTime.UtcNow;
     }
     

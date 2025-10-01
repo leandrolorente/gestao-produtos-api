@@ -132,6 +132,14 @@ public record LoginResponseDto
     public UserDto User { get; init; } = new UserDto();
 }
 
+public record LogoutDto
+{
+    public string UserId { get; init; } = string.Empty;
+    public string? Token { get; init; } // Token atual (opcional para validação)
+    public string? SessionId { get; init; } // ID da sessão (opcional)
+    public string? DeviceInfo { get; init; } // Informações do dispositivo (opcional)
+}
+
 public record RegisterDto
 {
     public string Name { get; init; } = string.Empty;
