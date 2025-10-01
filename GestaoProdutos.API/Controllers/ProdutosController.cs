@@ -1,11 +1,13 @@
 using GestaoProdutos.Application.DTOs;
 using GestaoProdutos.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestaoProdutos.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ProdutosController : ControllerBase
 {
     private readonly IProdutoService _produtoService;
