@@ -1,12 +1,14 @@
 using GestaoProdutos.Application.DTOs;
 using GestaoProdutos.Application.Interfaces;
 using GestaoProdutos.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestaoProdutos.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ClientesController : ControllerBase
 {
     private readonly IClienteService _clienteService;

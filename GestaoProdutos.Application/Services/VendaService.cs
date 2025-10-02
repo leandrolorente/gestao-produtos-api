@@ -134,7 +134,7 @@ public class VendaService : IVendaService
             Numero = await _unitOfWork.Vendas.GetProximoNumeroVendaAsync(),
             ClienteId = dto.ClienteId,
             ClienteNome = cliente.Nome,
-            ClienteEmail = cliente.Email?.ToString() ?? string.Empty,
+            ClienteEmail = cliente.Email?.Valor ?? string.Empty,
             Items = vendaItems,
             Desconto = dto.Desconto,
             FormaPagamento = formaPagamento,
@@ -201,7 +201,7 @@ public class VendaService : IVendaService
 
             venda.ClienteId = dto.ClienteId;
             venda.ClienteNome = cliente.Nome;
-            venda.ClienteEmail = cliente.Email?.ToString() ?? string.Empty;
+            venda.ClienteEmail = cliente.Email?.Valor ?? string.Empty;
         }
 
         // Restaurar estoque dos itens antigos

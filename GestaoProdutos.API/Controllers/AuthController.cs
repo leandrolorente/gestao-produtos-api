@@ -209,11 +209,102 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// ENDPOINT TEMPORÁRIO: Cria o primeiro usuário admin (apenas se não existir nenhum usuário)
+    /// Realiza logout do sistema
     /// </summary>
-    /// <param name="createDto">Dados do primeiro admin</param>
-    /// <returns>Dados do usuário criado</returns>
-    [HttpPost("setup-first-admin")]
+    /// <param name="logoutDto">Dados do usuário para logout</param>
+    /// <returns>Confirmação do logout</returns>
+    [HttpPost("logout")]
+    public async Task<ActionResult> Logout([FromBody] LogoutDto logoutDto)
+    {
+        try
+        {
+            // Validar se os dados foram enviados
+            if (string.IsNullOrEmpty(logoutDto.UserId))
+            {
+                return BadRequest(new { message = "UserId é obrigatório para logout" });
+            }
+
+            // Realizar logout com os dados enviados pelo frontend
+            var success = await _authService.LogoutAsync(logoutDto);
+            
+            if (!success)
+            {
+                return BadRequest(new { message = "Não foi possível realizar logout. Usuário não encontrado ou inativo." });
+            }
+
+            return Ok(new 
+            { 
+                message = "Logout realizado com sucesso",
+                userId = logoutDto.UserId,
+                timestamp = DateTime.UtcNow,
+                instructions = "Token removido com sucesso"
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new 
+            { 
+                message = "Erro interno do servidor",
+                details = ex.Message 
+            });
+        }
+    }
+
+    /// <summary>
+    /// Verifica se o token atual ainda é válido
+    /// </summary>
+    /// <returns>Status do token</returns>
+    [HttpGet("verify-token")]
+    [Authorize]
+    public ActionResult VerifyToken()
+    {
+        try
+        {
+            var userId = User.FindFirst("id")?.Value;
+            var userName = User.FindFirst("name")?.Value;
+            var userRole = User.FindFirst("role")?.Value;
+            var exp = User.FindFirst("exp")?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "Token inválido" });
+            }
+
+            // Converter exp para data legível
+            DateTime? expirationDate = null;
+            if (long.TryParse(exp, out long expUnix))
+            {
+                expirationDate = DateTimeOffset.FromUnixTimeSeconds(expUnix).DateTime;
+            }
+
+            return Ok(new 
+            { 
+                message = "Token válido",
+                userId = userId,
+                userName = userName,
+                userRole = userRole,
+                expiresAt = expirationDate,
+                isValid = true,
+                timestamp = DateTime.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new 
+            { 
+                message = "Erro interno do servidor",
+                details = ex.Message 
+            });
+        }
+    }
     public async Task<ActionResult<UserResponseDto>> SetupFirstAdmin([FromBody] UserCreateDto createDto)
     {
         try

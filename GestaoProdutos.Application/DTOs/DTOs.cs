@@ -102,12 +102,29 @@ public record UserDto
 
 public record DashboardStatsDto
 {
+    // Produtos
     public int TotalProducts { get; init; }
     public int LowStockProducts { get; init; }
     public decimal TotalValue { get; init; }
+    
+    // Vendas
+    public int TotalSales { get; init; }
+    public decimal TotalRevenue { get; init; }
+    public int SalesToday { get; init; }
+    public decimal RevenueToday { get; init; }
+    public int PendingSales { get; init; }
+    
+    // Clientes
+    public int TotalClients { get; init; }
+    public int ActiveClients { get; init; }
+    
+    // Transações recentes (mantido para compatibilidade)
     public int RecentTransactions { get; init; }
     public int PendingOrders { get; init; }
+    
+    // Top produtos
     public IEnumerable<ProductSummaryDto> TopSellingProducts { get; init; } = new List<ProductSummaryDto>();
+    public IEnumerable<VendaSummaryDto> RecentSales { get; init; } = new List<VendaSummaryDto>();
 }
 
 public record ProductSummaryDto
@@ -116,6 +133,17 @@ public record ProductSummaryDto
     public string Name { get; init; } = string.Empty;
     public int Quantity { get; init; }
     public int Sales { get; init; }
+    public decimal Revenue { get; init; }
+}
+
+public record VendaSummaryDto
+{
+    public string Id { get; init; } = string.Empty;
+    public string Numero { get; init; } = string.Empty;
+    public string ClienteNome { get; init; } = string.Empty;
+    public decimal Total { get; init; }
+    public string Status { get; init; } = string.Empty;
+    public DateTime DataVenda { get; init; }
 }
 
 // ===== AUTHENTICATION DTOs =====
@@ -130,6 +158,14 @@ public record LoginResponseDto
     public string Token { get; init; } = string.Empty;
     public DateTime ExpiresAt { get; init; }
     public UserDto User { get; init; } = new UserDto();
+}
+
+public record LogoutDto
+{
+    public string UserId { get; init; } = string.Empty;
+    public string? Token { get; init; } // Token atual (opcional para validação)
+    public string? SessionId { get; init; } // ID da sessão (opcional)
+    public string? DeviceInfo { get; init; } // Informações do dispositivo (opcional)
 }
 
 public record RegisterDto

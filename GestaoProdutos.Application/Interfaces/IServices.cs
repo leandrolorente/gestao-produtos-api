@@ -47,11 +47,15 @@ public interface IDashboardService
 {
     Task<DashboardStatsDto> GetDashboardStatsAsync();
     Task<IEnumerable<ProductSummaryDto>> GetTopSellingProductsAsync(int count = 5);
+    Task<IEnumerable<VendaSummaryDto>> GetRecentSalesAsync(int count = 5);
+    Task<decimal> GetRevenueByPeriodAsync(DateTime inicio, DateTime fim);
+    Task<int> GetSalesCountByPeriodAsync(DateTime inicio, DateTime fim);
 }
 
 public interface IAuthService
 {
     Task<LoginResponseDto> LoginAsync(LoginDto loginDto);
+    Task<bool> LogoutAsync(LogoutDto logoutDto);
     Task<bool> ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto);
     Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
     Task<bool> ChangePasswordAsync(string userId, ChangePasswordDto changePasswordDto);
