@@ -228,4 +228,22 @@ public class ClientesController : ControllerBase
             return StatusCode(500, new { message = "Erro interno do servidor", details = ex.Message });
         }
     }
+
+    /// <summary>
+    /// [TEMPORÁRIO] Criar endereços para clientes existentes que não possuem
+    /// </summary>
+    [HttpPost("migrar-enderecos")]
+    public ActionResult MigrarEnderecos()
+    {
+        try
+        {
+            // Este é um endpoint temporário para migração
+            // Em produção, isso seria feito via script de migração
+            return Ok(new { message = "Migração não implementada ainda. Use o endpoint POST /api/clientes para criar novos clientes com endereço." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Erro interno do servidor", details = ex.Message });
+        }
+    }
 }

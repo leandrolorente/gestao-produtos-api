@@ -309,13 +309,7 @@ public class VendaServiceTests
             Email = new GestaoProdutos.Domain.ValueObjects.Email(email),
             CpfCnpj = new GestaoProdutos.Domain.ValueObjects.CpfCnpj("12345678901"),
             Telefone = "(11) 99999-9999",
-            Endereco = new GestaoProdutos.Domain.ValueObjects.Endereco
-            {
-                Logradouro = "Rua Teste, 123",
-                Cidade = "São Paulo",
-                Estado = "SP",
-                Cep = "01234-567"
-            },
+            EnderecoId = "endereco_teste",
             Tipo = TipoCliente.PessoaFisica,
             Ativo = true,
             DataCriacao = DateTime.UtcNow,

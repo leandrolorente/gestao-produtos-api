@@ -1,5 +1,7 @@
 using MongoDB.Driver;
 using GestaoProdutos.Domain.Entities;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Conventions;
 
 namespace GestaoProdutos.Infrastructure.Data;
 
@@ -11,12 +13,37 @@ public class MongoDbContext
     {
         var client = new MongoClient(connectionString);
         _database = client.GetDatabase(databaseName);
+        
+        // Configurar convenções do MongoDB
+        ConfigureConventions();
+    }
+
+    private static void ConfigureConventions()
+    {
+        // Configurar para ignorar campos extras durante deserialização
+        var conventionPack = new ConventionPack
+        {
+            new IgnoreExtraElementsConvention(true)
+        };
+        
+        ConventionRegistry.Register("MyConventions", conventionPack, t => true);
+        
+        // Configurar mapeamento específico para Cliente se necessário
+        if (!BsonClassMap.IsClassMapRegistered(typeof(Cliente)))
+        {
+            BsonClassMap.RegisterClassMap<Cliente>(cm =>
+            {
+                cm.AutoMap();
+                cm.SetIgnoreExtraElements(true);
+            });
+        }
     }
 
     public IMongoCollection<Produto> Produtos => _database.GetCollection<Produto>("produtos");
     public IMongoCollection<Cliente> Clientes => _database.GetCollection<Cliente>("clientes");
     public IMongoCollection<Usuario> Usuarios => _database.GetCollection<Usuario>("usuarios");
     public IMongoCollection<Venda> Vendas => _database.GetCollection<Venda>("vendas");
+    public IMongoCollection<EnderecoEntity> Enderecos => _database.GetCollection<EnderecoEntity>("enderecos");
 
     // Método para criação de índices
     public async Task CreateIndexesAsync()

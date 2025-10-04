@@ -42,6 +42,62 @@ public record UpdateProdutoDto
     public int? EstoqueMinimo { get; init; }
 }
 
+// DTOs para Endereço
+public record EnderecoDto
+{
+    public string Id { get; init; } = string.Empty;
+    public string Cep { get; init; } = string.Empty;
+    public string Logradouro { get; init; } = string.Empty;
+    public string Numero { get; init; } = string.Empty;
+    public string? Complemento { get; init; }
+    public string Unidade { get; init; } = string.Empty;
+    public string Bairro { get; init; } = string.Empty;
+    public string Localidade { get; init; } = string.Empty;
+    public string Uf { get; init; } = string.Empty;
+    public string Estado { get; init; } = string.Empty;
+    public string Regiao { get; init; } = string.Empty;
+    public string? Referencia { get; init; }
+    public bool IsPrincipal { get; init; }
+    public string Tipo { get; init; } = string.Empty;
+    public bool Ativo { get; init; }
+    public DateTime DataCriacao { get; init; }
+    public DateTime DataAtualizacao { get; init; }
+}
+
+public record CreateEnderecoDto
+{
+    public string Cep { get; init; } = string.Empty;
+    public string Logradouro { get; init; } = string.Empty;
+    public string Numero { get; init; } = string.Empty;
+    public string? Complemento { get; init; }
+    public string Unidade { get; init; } = string.Empty;
+    public string Bairro { get; init; } = string.Empty;
+    public string Localidade { get; init; } = string.Empty;
+    public string Uf { get; init; } = string.Empty;
+    public string Estado { get; init; } = string.Empty;
+    public string Regiao { get; init; } = string.Empty;
+    public string? Referencia { get; init; }
+    public bool IsPrincipal { get; init; } = true;
+    public string Tipo { get; init; } = "Residencial";
+}
+
+public record UpdateEnderecoDto
+{
+    public string Cep { get; init; } = string.Empty;
+    public string Logradouro { get; init; } = string.Empty;
+    public string Numero { get; init; } = string.Empty;
+    public string? Complemento { get; init; }
+    public string Unidade { get; init; } = string.Empty;
+    public string Bairro { get; init; } = string.Empty;
+    public string Localidade { get; init; } = string.Empty;
+    public string Uf { get; init; } = string.Empty;
+    public string Estado { get; init; } = string.Empty;
+    public string Regiao { get; init; } = string.Empty;
+    public string? Referencia { get; init; }
+    public bool IsPrincipal { get; init; } = true;
+    public string Tipo { get; init; } = "Residencial";
+}
+
 public record ClienteDto
 {
     public string Id { get; init; } = string.Empty;
@@ -49,10 +105,7 @@ public record ClienteDto
     public string Email { get; init; } = string.Empty;
     public string Telefone { get; init; } = string.Empty;
     public string CpfCnpj { get; init; } = string.Empty;
-    public string Endereco { get; init; } = string.Empty;
-    public string Cidade { get; init; } = string.Empty;
-    public string Estado { get; init; } = string.Empty;
-    public string Cep { get; init; } = string.Empty;
+    public EnderecoDto? Endereco { get; init; }
     public string Tipo { get; init; } = string.Empty; // "Pessoa Física" ou "Pessoa Jurídica"
     public bool Ativo { get; init; }
     public DateTime DataCadastro { get; init; }
@@ -66,10 +119,7 @@ public record CreateClienteDto
     public string Email { get; init; } = string.Empty;
     public string Telefone { get; init; } = string.Empty;
     public string CpfCnpj { get; init; } = string.Empty;
-    public string Endereco { get; init; } = string.Empty;
-    public string Cidade { get; init; } = string.Empty;
-    public string Estado { get; init; } = string.Empty;
-    public string Cep { get; init; } = string.Empty;
+    public CreateEnderecoDto Endereco { get; init; } = new();
     public TipoCliente Tipo { get; init; }
     public string? Observacoes { get; init; }
 }
@@ -80,10 +130,8 @@ public record UpdateClienteDto
     public string Email { get; init; } = string.Empty;
     public string Telefone { get; init; } = string.Empty;
     public string CpfCnpj { get; init; } = string.Empty;
-    public string Endereco { get; init; } = string.Empty;
-    public string Cidade { get; init; } = string.Empty;
-    public string Estado { get; init; } = string.Empty;
-    public string Cep { get; init; } = string.Empty;
+    public UpdateEnderecoDto Endereco { get; init; } = new();
+    public TipoCliente Tipo { get; init; }
     public string? Observacoes { get; init; }
 }
 

@@ -60,16 +60,27 @@ public class ApiConfigurationTests
     public void CreateClienteDto_ShouldAcceptValidData()
     {
         // Arrange & Act
+        var enderecoDto = new CreateEnderecoDto
+        {
+            Cep = "01234567",
+            Logradouro = "Rua Test",
+            Numero = "123",
+            Bairro = "Centro",
+            Localidade = "São Paulo",
+            Uf = "SP",
+            Estado = "São Paulo",
+            Regiao = "Sudeste",
+            IsPrincipal = true,
+            Tipo = "Residencial"
+        };
+
         var dto = new CreateClienteDto
         {
             Nome = "Cliente Test",
             Email = "cliente@test.com",
             Telefone = "(11) 9999-9999",
             CpfCnpj = "123.456.789-00",
-            Endereco = "Rua Test, 123",
-            Cidade = "São Paulo",
-            Estado = "SP",
-            Cep = "01234-567",
+            Endereco = enderecoDto,
             Tipo = TipoCliente.PessoaFisica,
             Observacoes = "Cliente VIP"
         };
@@ -78,5 +89,7 @@ public class ApiConfigurationTests
         dto.Nome.Should().Be("Cliente Test");
         dto.Email.Should().Be("cliente@test.com");
         dto.Tipo.Should().Be(TipoCliente.PessoaFisica);
+        dto.Endereco.Should().NotBeNull();
+        dto.Endereco.Logradouro.Should().Be("Rua Test");
     }
 }

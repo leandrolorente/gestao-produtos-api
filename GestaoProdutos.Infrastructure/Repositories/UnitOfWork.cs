@@ -8,6 +8,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly MongoDbContext _context;
     private IProdutoRepository? _produtos;
     private IClienteRepository? _clientes;
+    private IEnderecoRepository? _enderecos;
     private IUsuarioRepository? _usuarios;
     private IVendaRepository? _vendas;
 
@@ -21,6 +22,9 @@ public class UnitOfWork : IUnitOfWork
 
     public IClienteRepository Clientes => 
         _clientes ??= new ClienteRepository(_context);
+
+    public IEnderecoRepository Enderecos => 
+        _enderecos ??= new EnderecoRepository(_context);
 
     public IUsuarioRepository Usuarios => 
         _usuarios ??= new UsuarioRepository(_context);

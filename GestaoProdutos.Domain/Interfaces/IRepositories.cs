@@ -32,6 +32,14 @@ public interface IClienteRepository : IRepository<Cliente>
     Task<bool> CpfCnpjJaExisteAsync(string cpfCnpj, string? clienteId = null);
 }
 
+public interface IEnderecoRepository : IRepository<EnderecoEntity>
+{
+    Task<EnderecoEntity?> GetEnderecoPrincipalByClienteAsync(string clienteId);
+    Task<IEnumerable<EnderecoEntity>> GetEnderecosByClienteAsync(string clienteId);
+    Task<bool> DeleteEnderecosByClienteAsync(string clienteId);
+    Task<EnderecoEntity?> GetEnderecoByClienteAndTipoAsync(string clienteId, string tipo);
+}
+
 public interface IUsuarioRepository : IRepository<Usuario>
 {
     Task<Usuario?> GetUsuarioPorEmailAsync(string email);
@@ -59,6 +67,7 @@ public interface IUnitOfWork : IDisposable
 {
     IProdutoRepository Produtos { get; }
     IClienteRepository Clientes { get; }
+    IEnderecoRepository Enderecos { get; }
     IUsuarioRepository Usuarios { get; }
     IVendaRepository Vendas { get; }
     Task<bool> SaveChangesAsync();
