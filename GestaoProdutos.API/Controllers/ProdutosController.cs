@@ -11,10 +11,12 @@ namespace GestaoProdutos.API.Controllers;
 public class ProdutosController : ControllerBase
 {
     private readonly IProdutoService _produtoService;
+    private readonly ILogger<ProdutosController> _logger;
 
-    public ProdutosController(IProdutoService produtoService)
+    public ProdutosController(IProdutoService produtoService, ILogger<ProdutosController> logger)
     {
         _produtoService = produtoService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -25,7 +27,25 @@ public class ProdutosController : ControllerBase
     {
         try
         {
+            _logger.LogInformation("🔍 [PRODUTOS] Requisição GetAllProdutos recebida - Verificando cache...");
+            var startTime = DateTime.UtcNow;
+            
             var produtos = await _produtoService.GetAllProdutosAsync();
+            
+            var endTime = DateTime.UtcNow;
+            var duration = endTime - startTime;
+            
+            if (duration.TotalMilliseconds < 50)
+            {
+                _logger.LogInformation("🚀 [CACHE HIT] Produtos retornados do REDIS em {Duration}ms", duration.TotalMilliseconds);
+                Console.WriteLine($"🚀 [CACHE HIT] Produtos retornados do REDIS em {duration.TotalMilliseconds:F2}ms");
+            }
+            else
+            {
+                _logger.LogInformation("🗄️ [DATABASE] Produtos buscados no MONGODB em {Duration}ms", duration.TotalMilliseconds);
+                Console.WriteLine($"🗄️ [DATABASE] Produtos buscados no MONGODB em {duration.TotalMilliseconds:F2}ms");
+            }
+            
             return Ok(produtos);
         }
         catch (Exception ex)
@@ -42,9 +62,27 @@ public class ProdutosController : ControllerBase
     {
         try
         {
+            _logger.LogInformation("🔍 [PRODUTO ID] Requisição GetProdutoById({Id}) - Verificando cache...", id);
+            var startTime = DateTime.UtcNow;
+            
             var produto = await _produtoService.GetProdutoByIdAsync(id);
+            
+            var endTime = DateTime.UtcNow;
+            var duration = endTime - startTime;
+            
             if (produto == null)
                 return NotFound(new { message = "Produto não encontrado" });
+
+            if (duration.TotalMilliseconds < 50)
+            {
+                _logger.LogInformation("🚀 [CACHE HIT] Produto ID:{Id} retornado do REDIS em {Duration}ms", id, duration.TotalMilliseconds);
+                Console.WriteLine($"🚀 [CACHE HIT] Produto ID:{id} retornado do REDIS em {duration.TotalMilliseconds:F2}ms");
+            }
+            else
+            {
+                _logger.LogInformation("🗄️ [DATABASE] Produto ID:{Id} buscado no MONGODB em {Duration}ms", id, duration.TotalMilliseconds);
+                Console.WriteLine($"🗄️ [DATABASE] Produto ID:{id} buscado no MONGODB em {duration.TotalMilliseconds:F2}ms");
+            }
 
             return Ok(produto);
         }

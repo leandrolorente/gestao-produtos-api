@@ -12,10 +12,12 @@ namespace GestaoProdutos.API.Controllers;
 public class ClientesController : ControllerBase
 {
     private readonly IClienteService _clienteService;
+    private readonly ILogger<ClientesController> _logger;
 
-    public ClientesController(IClienteService clienteService)
+    public ClientesController(IClienteService clienteService, ILogger<ClientesController> logger)
     {
         _clienteService = clienteService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -26,7 +28,25 @@ public class ClientesController : ControllerBase
     {
         try
         {
+            _logger.LogInformation("🔍 [CLIENTES] Requisição GetAllClientes recebida - Verificando cache...");
+            var startTime = DateTime.UtcNow;
+            
             var clientes = await _clienteService.GetAllClientesAsync();
+            
+            var endTime = DateTime.UtcNow;
+            var duration = endTime - startTime;
+            
+            if (duration.TotalMilliseconds < 50)
+            {
+                _logger.LogInformation("🚀 [CACHE HIT] Clientes retornados do REDIS em {Duration}ms", duration.TotalMilliseconds);
+                Console.WriteLine($"🚀 [CACHE HIT] Clientes retornados do REDIS em {duration.TotalMilliseconds:F2}ms");
+            }
+            else
+            {
+                _logger.LogInformation("🗄️ [DATABASE] Clientes buscados no MONGODB em {Duration}ms", duration.TotalMilliseconds);
+                Console.WriteLine($"🗄️ [DATABASE] Clientes buscados no MONGODB em {duration.TotalMilliseconds:F2}ms");
+            }
+            
             return Ok(clientes);
         }
         catch (Exception ex)

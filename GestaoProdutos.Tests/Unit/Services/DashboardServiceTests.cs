@@ -3,10 +3,12 @@ using Moq;
 using FluentAssertions;
 using GestaoProdutos.Application.Services;
 using GestaoProdutos.Application.DTOs;
+using GestaoProdutos.Application.Interfaces;
 using GestaoProdutos.Domain.Interfaces;
 using GestaoProdutos.Domain.Entities;
 using GestaoProdutos.Domain.Enums;
 using GestaoProdutos.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace GestaoProdutos.Tests.Unit.Services;
 
@@ -29,7 +31,13 @@ public class DashboardServiceTests
         _mockUnitOfWork.Setup(u => u.Vendas).Returns(_mockVendaRepository.Object);
         _mockUnitOfWork.Setup(u => u.Clientes).Returns(_mockClienteRepository.Object);
 
-        _dashboardService = new DashboardService(_mockUnitOfWork.Object);
+        var mockCache = new Mock<ICacheService>();
+        var mockLogger = new Mock<ILogger<DashboardService>>();
+
+        _dashboardService = new DashboardService(
+            _mockUnitOfWork.Object, 
+            mockCache.Object, 
+            mockLogger.Object);
     }
 
     [Fact]

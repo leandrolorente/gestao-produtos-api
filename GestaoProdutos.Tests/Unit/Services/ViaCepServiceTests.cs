@@ -2,6 +2,7 @@ using Xunit;
 using FluentAssertions;
 using GestaoProdutos.Application.DTOs;
 using GestaoProdutos.Application.Services;
+using GestaoProdutos.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
@@ -21,7 +22,9 @@ public class ViaCepServiceTests
         _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
         _mockLogger = new Mock<ILogger<ViaCepService>>();
         _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
-        _viaCepService = new ViaCepService(_httpClient, _mockLogger.Object);
+        
+        var mockCache = new Mock<ICacheService>();
+        _viaCepService = new ViaCepService(_httpClient, mockCache.Object, _mockLogger.Object);
     }
 
     [Fact]

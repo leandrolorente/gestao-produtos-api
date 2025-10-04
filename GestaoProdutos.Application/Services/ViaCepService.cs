@@ -7,22 +7,27 @@ using System.Text.RegularExpressions;
 namespace GestaoProdutos.Application.Services;
 
 /// <summary>
-/// Serviço para integração com a API do ViaCEP
+/// Serviço para integração com a API do ViaCEP com cache Redis
 /// </summary>
 public class ViaCepService : IViaCepService
 {
     private readonly HttpClient _httpClient;
+    private readonly ICacheService _cache;
     private readonly ILogger<ViaCepService> _logger;
     private const string VIACEP_BASE_URL = "https://viacep.com.br/ws/";
 
-    public ViaCepService(HttpClient httpClient, ILogger<ViaCepService> logger)
+    public ViaCepService(
+        HttpClient httpClient, 
+        ICacheService cache,
+        ILogger<ViaCepService> logger)
     {
         _httpClient = httpClient;
+        _cache = cache;
         _logger = logger;
     }
 
     /// <summary>
-    /// Busca informações de endereço pelo CEP
+    /// Busca informações de endereço pelo CEP com cache de 24 horas
     /// </summary>
     /// <param name="cep">CEP para consulta</param>
     /// <returns>Dados do endereço filtrados</returns>
@@ -36,6 +41,15 @@ public class ViaCepService : IViaCepService
             {
                 _logger.LogWarning("CEP inválido fornecido: {Cep}", cep);
                 return null;
+            }
+
+            // Verificar cache primeiro
+            var cacheKey = $"gp:viacep:{cepLimpo}";
+            var cachedResult = await _cache.GetAsync<ViaCepResponseDto>(cacheKey);
+            if (cachedResult != null)
+            {
+                _logger.LogDebug("Endereço para CEP {Cep} recuperado do cache", cepLimpo);
+                return cachedResult;
             }
 
             // Fazer requisição para ViaCEP
@@ -76,6 +90,10 @@ public class ViaCepService : IViaCepService
                 Estado = viaCepResponse.Estado,
                 Regiao = viaCepResponse.Regiao
             };
+
+            // Armazenar no cache por 24 horas (endereços não mudam frequentemente)
+            await _cache.SetAsync(cacheKey, resultado, TimeSpan.FromHours(24));
+            _logger.LogDebug("Endereço para CEP {Cep} armazenado no cache por 24 horas", cepLimpo);
 
             _logger.LogInformation("CEP encontrado com sucesso: {Cep} - {Localidade}/{Uf}", 
                 resultado.Cep, resultado.Localidade, resultado.Uf);
