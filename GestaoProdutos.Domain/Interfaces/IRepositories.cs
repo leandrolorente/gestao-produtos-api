@@ -32,6 +32,18 @@ public interface IClienteRepository : IRepository<Cliente>
     Task<bool> CpfCnpjJaExisteAsync(string cpfCnpj, string? clienteId = null);
 }
 
+public interface IFornecedorRepository : IRepository<Fornecedor>
+{
+    Task<Fornecedor?> GetFornecedorPorCnpjCpfAsync(string cnpjCpf);
+    Task<IEnumerable<Fornecedor>> GetFornecedoresAtivosPorTipoAsync(TipoFornecedor tipo);
+    Task<IEnumerable<Fornecedor>> GetFornecedoresComCompraRecenteAsync(int dias = 90);
+    Task<IEnumerable<Fornecedor>> GetFornecedoresPorStatusAsync(StatusFornecedor status);
+    Task<IEnumerable<Fornecedor>> GetFornecedoresPorProdutoAsync(string produtoId);
+    Task<bool> CnpjCpfJaExisteAsync(string cnpjCpf, string? fornecedorId);
+    Task<IEnumerable<Fornecedor>> GetFornecedoresFrequentesAsync();
+    Task<IEnumerable<Fornecedor>> BuscarFornecedoresAsync(string termo);
+}
+
 public interface IEnderecoRepository : IRepository<EnderecoEntity>
 {
     Task<EnderecoEntity?> GetEnderecoPrincipalByClienteAsync(string clienteId);
@@ -67,6 +79,7 @@ public interface IUnitOfWork : IDisposable
 {
     IProdutoRepository Produtos { get; }
     IClienteRepository Clientes { get; }
+    IFornecedorRepository Fornecedores { get; }
     IEnderecoRepository Enderecos { get; }
     IUsuarioRepository Usuarios { get; }
     IVendaRepository Vendas { get; }

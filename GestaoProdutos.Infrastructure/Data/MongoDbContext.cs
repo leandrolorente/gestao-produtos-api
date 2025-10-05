@@ -44,6 +44,7 @@ public class MongoDbContext
     public IMongoCollection<Usuario> Usuarios => _database.GetCollection<Usuario>("usuarios");
     public IMongoCollection<Venda> Vendas => _database.GetCollection<Venda>("vendas");
     public IMongoCollection<EnderecoEntity> Enderecos => _database.GetCollection<EnderecoEntity>("enderecos");
+    public IMongoCollection<Fornecedor> Fornecedores => _database.GetCollection<Fornecedor>("fornecedores");
 
     // Método para criação de índices
     public async Task CreateIndexesAsync()
@@ -73,5 +74,19 @@ public class MongoDbContext
             new(Builders<Usuario>.IndexKeys.Ascending(u => u.Nome))
         };
         await Usuarios.Indexes.CreateManyAsync(usuariosIndexes);
+
+        // Fornecedores - índices otimizados
+        var fornecedoresIndexes = new List<CreateIndexModel<Fornecedor>>
+        {
+            new(Builders<Fornecedor>.IndexKeys.Ascending(f => f.CnpjCpf)),
+            new(Builders<Fornecedor>.IndexKeys.Ascending(f => f.RazaoSocial)),
+            new(Builders<Fornecedor>.IndexKeys.Ascending(f => f.NomeFantasia)),
+            new(Builders<Fornecedor>.IndexKeys.Ascending(f => f.Email)),
+            new(Builders<Fornecedor>.IndexKeys.Ascending(f => f.Tipo)),
+            new(Builders<Fornecedor>.IndexKeys.Ascending(f => f.Status)),
+            new(Builders<Fornecedor>.IndexKeys.Ascending(f => f.UltimaCompra)),
+            new(Builders<Fornecedor>.IndexKeys.Text(f => f.RazaoSocial).Text(f => f.NomeFantasia))
+        };
+        await Fornecedores.Indexes.CreateManyAsync(fornecedoresIndexes);
     }
 }

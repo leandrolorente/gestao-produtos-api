@@ -42,3 +42,22 @@ public enum FormaPagamento
     PIX = 4,
     Boleto = 5
 }
+
+/// <summary>
+/// Tipos de fornecedor
+/// </summary>
+public enum TipoFornecedor
+{
+    Nacional = 1,
+    Internacional = 2
+}
+
+/// <summary>
+/// Status do fornecedor
+/// </summary>
+public enum StatusFornecedor
+{
+    Ativo = 1,
+    Inativo = 2,
+    Bloqueado = 3
+}
