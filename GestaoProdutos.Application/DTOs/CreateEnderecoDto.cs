@@ -1,3 +1,5 @@
+using GestaoProdutos.Domain.Enums;
+
 namespace GestaoProdutos.Application.DTOs;
 
 public record CreateEnderecoDto
@@ -14,5 +16,5 @@ public record CreateEnderecoDto
     public string Regiao { get; init; } = string.Empty;
     public string? Referencia { get; init; }
     public bool IsPrincipal { get; init; } = true;
-    public string Tipo { get; init; } = "Residencial";
+    public TipoEndereco Tipo { get; init; } = TipoEndereco.Residencial;
 }

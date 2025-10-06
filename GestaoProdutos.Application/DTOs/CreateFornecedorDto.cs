@@ -1,4 +1,5 @@
 using GestaoProdutos.Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace GestaoProdutos.Application.DTOs;
 
@@ -16,6 +17,7 @@ public record CreateFornecedorDto
     public string? InscricaoEstadual { get; init; }
     public string? InscricaoMunicipal { get; init; }
     public TipoFornecedor Tipo { get; init; }
+    public StatusFornecedor? Status { get; init; } // Opcional para criação, padrão será Ativo
     public string? Observacoes { get; init; }
     public string? ContatoPrincipal { get; init; }
     public string? Site { get; init; }

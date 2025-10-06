@@ -100,7 +100,7 @@ public class ClienteService : IClienteService
             Regiao = dto.Endereco.Regiao,
             Referencia = dto.Endereco.Referencia,
             IsPrincipal = dto.Endereco.IsPrincipal,
-            Tipo = dto.Endereco.Tipo
+            Tipo = dto.Endereco.Tipo.ToString()
         };
 
         var enderecoCreated = await _unitOfWork.Enderecos.CreateAsync(endereco);

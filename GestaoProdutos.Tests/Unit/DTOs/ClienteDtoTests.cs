@@ -74,7 +74,7 @@ public class ClienteDtoTests
             Estado = "Rio de Janeiro",
             Regiao = "Sudeste",
             IsPrincipal = true,
-            Tipo = "Residencial"
+            Tipo = TipoEndereco.Residencial
         };
 
         var createDto = new CreateClienteDto

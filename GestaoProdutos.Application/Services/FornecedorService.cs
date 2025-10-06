@@ -244,7 +244,7 @@ public class FornecedorService : IFornecedorService
                 InscricaoEstadual = dto.InscricaoEstadual,
                 InscricaoMunicipal = dto.InscricaoMunicipal,
                 Tipo = dto.Tipo,
-                Status = StatusFornecedor.Ativo,
+                Status = dto.Status ?? StatusFornecedor.Ativo, // Usar status do DTO ou padrão Ativo
                 Observacoes = dto.Observacoes,
                 ContatoPrincipal = dto.ContatoPrincipal,
                 Site = dto.Site,

@@ -63,7 +63,7 @@ public class EnderecoService : IEnderecoService
             Regiao = createDto.Regiao,
             Referencia = createDto.Referencia,
             IsPrincipal = createDto.IsPrincipal,
-            Tipo = createDto.Tipo
+            Tipo = createDto.Tipo.ToString()
         };
 
         var createdEndereco = await _unitOfWork.Enderecos.CreateAsync(endereco);

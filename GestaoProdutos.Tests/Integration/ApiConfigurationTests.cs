@@ -71,7 +71,7 @@ public class ApiConfigurationTests
             Estado = "São Paulo",
             Regiao = "Sudeste",
             IsPrincipal = true,
-            Tipo = "Residencial"
+            Tipo = TipoEndereco.Residencial
         };
 
         var dto = new CreateClienteDto
