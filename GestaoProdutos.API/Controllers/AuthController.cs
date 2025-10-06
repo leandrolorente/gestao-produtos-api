@@ -305,6 +305,13 @@ public class AuthController : ControllerBase
             });
         }
     }
+
+    /// <summary>
+    /// Configura o primeiro administrador do sistema (apenas quando não há usuários)
+    /// </summary>
+    /// <param name="createDto">Dados do primeiro administrador</param>
+    /// <returns>Dados do usuário criado</returns>
+    [HttpPost("setup-first-admin")]
     public async Task<ActionResult<UserResponseDto>> SetupFirstAdmin([FromBody] UserCreateDto createDto)
     {
         try

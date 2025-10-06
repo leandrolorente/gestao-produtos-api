@@ -23,13 +23,7 @@ public class ClienteCpfCnpjChangeIntegrationTests
             Telefone = "(11) 98765-4321",
             CpfCnpj = new CpfCnpj("12345678901"), // CPF com 11 dígitos
             Tipo = TipoCliente.PessoaFisica,
-            Endereco = new Endereco
-            {
-                Logradouro = "Rua das Flores, 123",
-                Cidade = "São Paulo",
-                Estado = "SP",
-                Cep = "01234-567"
-            }
+            EnderecoId = "endereco1"
         };
 
         // Validação inicial - deve ser Pessoa Física
@@ -72,13 +66,7 @@ public class ClienteCpfCnpjChangeIntegrationTests
             Telefone = "(11) 3333-4444",
             CpfCnpj = new CpfCnpj("98765432000155"), // CNPJ com 14 dígitos
             Tipo = TipoCliente.PessoaJuridica,
-            Endereco = new Endereco
-            {
-                Logradouro = "Av. Paulista, 1000",
-                Cidade = "São Paulo",
-                Estado = "SP",
-                Cep = "01310-100"
-            }
+            EnderecoId = "endereco2"
         };
 
         // Validação inicial - deve ser Pessoa Jurídica

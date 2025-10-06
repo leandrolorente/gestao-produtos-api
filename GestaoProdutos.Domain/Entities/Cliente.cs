@@ -11,7 +11,10 @@ public class Cliente : BaseEntity
     public Email? Email { get; set; }
     public string Telefone { get; set; } = string.Empty;
     public CpfCnpj? CpfCnpj { get; set; }
-    public Endereco Endereco { get; set; } = new Endereco();
+    
+    [BsonElement("enderecoId")]
+    public string? EnderecoId { get; set; } // Referência para a entidade Endereco
+    
     public TipoCliente Tipo { get; set; }
     public DateTime? UltimaCompra { get; set; }
     public string? Observacoes { get; set; }
