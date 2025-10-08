@@ -305,7 +305,8 @@ public class FornecedorService : IFornecedorService
             // Atualizar outros campos
             fornecedor.InscricaoEstadual = dto.InscricaoEstadual;
             fornecedor.InscricaoMunicipal = dto.InscricaoMunicipal;
-            fornecedor.Tipo = dto.Tipo;
+            if (dto.Tipo.HasValue)
+                fornecedor.Tipo = dto.Tipo.Value;
             fornecedor.Status = dto.Status;
             fornecedor.Observacoes = dto.Observacoes;
             fornecedor.Site = dto.Site;

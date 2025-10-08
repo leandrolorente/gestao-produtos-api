@@ -152,7 +152,7 @@ public class ClienteService : IClienteService
                     endereco.Regiao = dto.Endereco.Regiao;
                     endereco.Referencia = dto.Endereco.Referencia;
                     endereco.IsPrincipal = dto.Endereco.IsPrincipal;
-                    endereco.Tipo = dto.Endereco.Tipo;
+                    endereco.Tipo = dto.Endereco.Tipo.ToString();
 
                     await _unitOfWork.Enderecos.UpdateAsync(endereco);
                 }
@@ -175,7 +175,7 @@ public class ClienteService : IClienteService
                     Regiao = dto.Endereco.Regiao,
                     Referencia = dto.Endereco.Referencia,
                     IsPrincipal = dto.Endereco.IsPrincipal,
-                    Tipo = dto.Endereco.Tipo
+                    Tipo = dto.Endereco.Tipo.ToString()
                 };
 
                 await _unitOfWork.Enderecos.CreateAsync(novoEndereco);

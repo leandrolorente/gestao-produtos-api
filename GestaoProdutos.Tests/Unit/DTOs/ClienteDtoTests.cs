@@ -116,7 +116,7 @@ public class ClienteDtoTests
             Estado = "Minas Gerais",
             Regiao = "Sudeste",
             IsPrincipal = true,
-            Tipo = "Comercial"
+            Tipo = TipoEndereco.Comercial
         };
 
         var updateDto = new UpdateClienteDto

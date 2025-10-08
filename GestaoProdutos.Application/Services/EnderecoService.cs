@@ -90,7 +90,7 @@ public class EnderecoService : IEnderecoService
         existingEndereco.Regiao = updateDto.Regiao;
         existingEndereco.Referencia = updateDto.Referencia;
         existingEndereco.IsPrincipal = updateDto.IsPrincipal;
-        existingEndereco.Tipo = updateDto.Tipo;
+        existingEndereco.Tipo = updateDto.Tipo.ToString();
 
         await _unitOfWork.Enderecos.UpdateAsync(existingEndereco);
         await _unitOfWork.SaveChangesAsync();

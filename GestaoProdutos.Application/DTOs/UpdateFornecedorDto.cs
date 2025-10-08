@@ -14,7 +14,7 @@ public record UpdateFornecedorDto
     public UpdateEnderecoDto? Endereco { get; init; }
     public string? InscricaoEstadual { get; init; }
     public string? InscricaoMunicipal { get; init; }
-    public TipoFornecedor Tipo { get; init; } = TipoFornecedor.Nacional;
+    public TipoFornecedor? Tipo { get; init; } = TipoFornecedor.Nacional;
     public StatusFornecedor Status { get; init; } = StatusFornecedor.Ativo;
     public string? Observacoes { get; init; }
     public string? ContatoPrincipal { get; init; }
