@@ -12,6 +12,8 @@ public class UnitOfWork : IUnitOfWork
     private IUsuarioRepository? _usuarios;
     private IVendaRepository? _vendas;
     private IFornecedorRepository? _fornecedores;
+    private IContaPagarRepository? _contasPagar;
+    private IContaReceberRepository? _contasReceber;
 
     public UnitOfWork(MongoDbContext context)
     {
@@ -35,6 +37,12 @@ public class UnitOfWork : IUnitOfWork
 
     public IFornecedorRepository Fornecedores => 
         _fornecedores ??= new FornecedorRepository(_context);
+
+    public IContaPagarRepository ContasPagar => 
+        _contasPagar ??= new ContaPagarRepository(_context);
+
+    public IContaReceberRepository ContasReceber => 
+        _contasReceber ??= new ContaReceberRepository(_context);
 
     public async Task<bool> SaveChangesAsync()
     {

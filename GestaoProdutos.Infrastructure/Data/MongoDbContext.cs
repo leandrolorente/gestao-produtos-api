@@ -45,6 +45,11 @@ public class MongoDbContext
     public IMongoCollection<Venda> Vendas => _database.GetCollection<Venda>("vendas");
     public IMongoCollection<EnderecoEntity> Enderecos => _database.GetCollection<EnderecoEntity>("enderecos");
     public IMongoCollection<Fornecedor> Fornecedores => _database.GetCollection<Fornecedor>("fornecedores");
+    public IMongoCollection<ContaPagar> ContasPagar => _database.GetCollection<ContaPagar>("contasPagar");
+    public IMongoCollection<ContaReceber> ContasReceber => _database.GetCollection<ContaReceber>("contasReceber");
+
+    // Método genérico para acessar qualquer collection
+    public IMongoCollection<T> GetCollection<T>(string name) => _database.GetCollection<T>(name);
 
     // Método para criação de índices
     public async Task CreateIndexesAsync()

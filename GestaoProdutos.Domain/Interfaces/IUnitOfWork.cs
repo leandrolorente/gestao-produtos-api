@@ -8,5 +8,7 @@ public interface IUnitOfWork : IDisposable
     IEnderecoRepository Enderecos { get; }
     IUsuarioRepository Usuarios { get; }
     IVendaRepository Vendas { get; }
+    IContaPagarRepository ContasPagar { get; }
+    IContaReceberRepository ContasReceber { get; }
     Task<bool> SaveChangesAsync();
 }

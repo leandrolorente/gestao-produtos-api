@@ -1,4 +1,4 @@
-Ôªøusing GestaoProdutos.Application.Interfaces;
+using GestaoProdutos.Application.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,12 +23,12 @@ public class HybridCacheService : ICacheService
         try
         {
             _primaryCache = serviceProvider.GetRequiredService<RedisCacheService>();
-            _logger.LogInformation("Redis Cache configurado como prim√°rio");
+            _logger.LogInformation("Redis Cache configurado como prim·rio");
             _redisAvailable = true;
         }
         catch
         {
-            _logger.LogWarning("Redis n√£o dispon√≠vel, usando Memory Cache");
+            _logger.LogWarning("Redis n„o disponÌvel, usando Memory Cache");
             _redisAvailable = false;
         }
         _fallbackCache = serviceProvider.GetRequiredService<MemoryCacheService>();
