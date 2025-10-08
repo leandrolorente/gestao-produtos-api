@@ -163,7 +163,8 @@ public class HybridCacheServiceTests
     {
         // Arrange
         var testObject = new TestCacheObject { Id = 1, Name = "Test" };
-        _memoryCacheStore["test:key"] = testObject;
+        var jsonString = System.Text.Json.JsonSerializer.Serialize(testObject);
+        _memoryCacheStore["test:key"] = jsonString;
 
         _mockDistributedCache
             .Setup(x => x.GetAsync("test:key", It.IsAny<CancellationToken>()))
@@ -209,7 +210,9 @@ public class HybridCacheServiceTests
 
         // Assert
         _memoryCacheStore.Should().ContainKey("test:key");
-        var stored = _memoryCacheStore["test:key"] as TestCacheObject;
+        var storedJson = _memoryCacheStore["test:key"] as string;
+        storedJson.Should().NotBeNull();
+        var stored = System.Text.Json.JsonSerializer.Deserialize<TestCacheObject>(storedJson!);
         stored.Should().NotBeNull();
         stored!.Id.Should().Be(1);
     }
@@ -218,7 +221,9 @@ public class HybridCacheServiceTests
     public async Task RemoveAsync_DeveFazerFallbackParaMemoryCacheQuandoRedisFalhar()
     {
         // Arrange
-        _memoryCacheStore["test:key"] = new TestCacheObject { Id = 1, Name = "Test" };
+        var testObject = new TestCacheObject { Id = 1, Name = "Test" };
+        var jsonString = System.Text.Json.JsonSerializer.Serialize(testObject);
+        _memoryCacheStore["test:key"] = jsonString;
 
         _mockDistributedCache
             .Setup(x => x.RemoveAsync("test:key", It.IsAny<CancellationToken>()))
@@ -267,7 +272,9 @@ public class HybridCacheServiceTests
     public async Task ExistsAsync_DeveRetornarTrueQuandoChaveExisteNoMemoryCacheAposFallback()
     {
         // Arrange
-        _memoryCacheStore["test:key"] = new TestCacheObject { Id = 1, Name = "Test" };
+        var testObject = new TestCacheObject { Id = 1, Name = "Test" };
+        var jsonString = System.Text.Json.JsonSerializer.Serialize(testObject);
+        _memoryCacheStore["test:key"] = jsonString;
 
         _mockDistributedCache
             .Setup(x => x.GetAsync("test:key", It.IsAny<CancellationToken>()))
@@ -326,7 +333,9 @@ public class HybridCacheServiceTests
     public async Task IncrementAsync_DeveFazerFallbackParaMemoryCacheQuandoRedisFalhar()
     {
         // Arrange
-        _memoryCacheStore["counter:key"] = 10L;
+        var initialValue = 10L;
+        var jsonString = System.Text.Json.JsonSerializer.Serialize(initialValue);
+        _memoryCacheStore["counter:key"] = jsonString;
 
         _mockDistributedCache
             .Setup(x => x.GetAsync("counter:key", It.IsAny<CancellationToken>()))
@@ -434,7 +443,9 @@ public class HybridCacheServiceTests
     public async Task GetAsync_DeveLogarQuandoRedisFalharEFizerFallback()
     {
         // Arrange
-        _memoryCacheStore["test:key"] = new TestCacheObject { Id = 1, Name = "Test" };
+        var testObject = new TestCacheObject { Id = 1, Name = "Test" };
+        var jsonString = System.Text.Json.JsonSerializer.Serialize(testObject);
+        _memoryCacheStore["test:key"] = jsonString;
 
         _mockDistributedCache
             .Setup(x => x.GetAsync("test:key", It.IsAny<CancellationToken>()))

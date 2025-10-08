@@ -450,7 +450,7 @@ public class FornecedorServiceTests
 
         // Assert
         resultado.Should().HaveCount(1);
-        resultado.First().Tipo.Should().Be(tipo.ToString());
+        resultado.First().Tipo.Should().Be("1"); // TipoFornecedor.Nacional
     }
 
     [Fact]
@@ -468,7 +468,7 @@ public class FornecedorServiceTests
 
         // Assert
         resultado.Should().HaveCount(1);
-        resultado.First().Status.Should().Be(status.ToString());
+        resultado.First().Status.Should().Be("1"); // StatusFornecedor.Ativo
     }
 
     [Fact]

@@ -362,10 +362,10 @@ public class ContasPagarControllerTests
 
         // Assert
         var okResult = resultado.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var response = okResult.Value.Should().BeOfType<object>().Subject;
+        var response = okResult.Value;
         
         // Verificar se a resposta contém o total
-        var totalProperty = response.GetType().GetProperty("total");
+        var totalProperty = response?.GetType().GetProperty("total");
         totalProperty.Should().NotBeNull();
         totalProperty!.GetValue(response).Should().Be(total);
     }
@@ -384,10 +384,10 @@ public class ContasPagarControllerTests
 
         // Assert
         var okResult = resultado.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var response = okResult.Value.Should().BeOfType<object>().Subject;
+        var response = okResult.Value;
         
         // Verificar se a resposta contém a quantidade
-        var quantidadeProperty = response.GetType().GetProperty("quantidade");
+        var quantidadeProperty = response?.GetType().GetProperty("quantidade");
         quantidadeProperty.Should().NotBeNull();
         quantidadeProperty!.GetValue(response).Should().Be(quantidade);
     }

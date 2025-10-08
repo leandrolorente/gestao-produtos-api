@@ -113,7 +113,10 @@ public class MemoryCacheServiceTests
 
         // Assert
         _cacheStore.Should().ContainKey("test:key");
-        var stored = _cacheStore["test:key"] as TestCacheObject;
+        var storedJson = _cacheStore["test:key"] as string;
+        storedJson.Should().NotBeNull();
+        
+        var stored = System.Text.Json.JsonSerializer.Deserialize<TestCacheObject>(storedJson!);
         stored.Should().NotBeNull();
         stored!.Id.Should().Be(1);
     }
@@ -233,11 +236,15 @@ public class MemoryCacheServiceTests
         _cacheStore.Should().ContainKey("key1");
         _cacheStore.Should().ContainKey("key2");
         
-        var obj1 = _cacheStore["key1"] as TestCacheObject;
+        var obj1Json = _cacheStore["key1"] as string;
+        obj1Json.Should().NotBeNull();
+        var obj1 = System.Text.Json.JsonSerializer.Deserialize<TestCacheObject>(obj1Json!);
         obj1.Should().NotBeNull();
         obj1!.Id.Should().Be(1);
 
-        var obj2 = _cacheStore["key2"] as TestCacheObject;
+        var obj2Json = _cacheStore["key2"] as string;
+        obj2Json.Should().NotBeNull();
+        var obj2 = System.Text.Json.JsonSerializer.Deserialize<TestCacheObject>(obj2Json!);
         obj2.Should().NotBeNull();
         obj2!.Id.Should().Be(2);
     }
