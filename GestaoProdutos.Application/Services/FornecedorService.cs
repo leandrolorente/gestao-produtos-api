@@ -579,16 +579,28 @@ public class FornecedorService : IFornecedorService
             Telefone = fornecedor.Telefone,
             Endereco = fornecedor.Endereco != null ? new EnderecoDto
             {
+                Id = string.Empty, // ValueObject não tem ID
                 Logradouro = fornecedor.Endereco.Logradouro,
+                Numero = string.Empty, // ValueObject não tem Numero
+                Complemento = fornecedor.Endereco.Complemento ?? string.Empty,
+                Unidade = string.Empty, // ValueObject não tem Unidade
+                Bairro = string.Empty, // ValueObject não tem Bairro
                 Localidade = fornecedor.Endereco.Cidade,
+                Uf = string.Empty, // ValueObject não tem UF separado
                 Estado = fornecedor.Endereco.Estado,
+                Regiao = string.Empty, // ValueObject não tem Regiao
+                Referencia = string.Empty, // ValueObject não tem Referencia
                 Cep = fornecedor.Endereco.Cep,
-                Complemento = fornecedor.Endereco.Complemento ?? string.Empty
+                IsPrincipal = true, // Assumir como principal
+                Tipo = "Comercial", // Assumir como comercial para fornecedor
+                Ativo = true,
+                DataCriacao = fornecedor.DataCriacao,
+                DataAtualizacao = fornecedor.DataAtualizacao
             } : null,
             InscricaoEstadual = fornecedor.InscricaoEstadual,
             InscricaoMunicipal = fornecedor.InscricaoMunicipal,
-            Tipo = fornecedor.Tipo.ToString(),
-            Status = fornecedor.Status.ToString(),
+            Tipo = ((int)fornecedor.Tipo).ToString(),
+            Status = ((int)fornecedor.Status).ToString(),
             Observacoes = fornecedor.Observacoes,
             ContatoPrincipal = fornecedor.ContatoPrincipal,
             Site = fornecedor.Site,
