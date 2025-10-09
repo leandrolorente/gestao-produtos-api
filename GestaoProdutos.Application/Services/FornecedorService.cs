@@ -14,15 +14,18 @@ namespace GestaoProdutos.Application.Services;
 public class FornecedorService : IFornecedorService
 {
     private readonly IFornecedorRepository _fornecedorRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ICacheService _cacheService;
     private readonly ILogger<FornecedorService> _logger;
 
     public FornecedorService(
         IFornecedorRepository fornecedorRepository,
+        IUnitOfWork unitOfWork,
         ICacheService cacheService,
         ILogger<FornecedorService> logger)
     {
         _fornecedorRepository = fornecedorRepository;
+        _unitOfWork = unitOfWork;
         _cacheService = cacheService;
         _logger = logger;
     }
@@ -101,7 +104,7 @@ public class FornecedorService : IFornecedorService
             var fornecedor = await _fornecedorRepository.GetByIdAsync(id);
             if (fornecedor == null) return null;
 
-            var resultado = MapToDto(fornecedor);
+            var resultado = await MapToDtoAsync(fornecedor);
             await _cacheService.SetAsync(cacheKey, resultado, TimeSpan.FromMinutes(10));
             
             return resultado;
@@ -233,6 +236,31 @@ public class FornecedorService : IFornecedorService
                 throw new InvalidOperationException($"Já existe um fornecedor com o CNPJ/CPF: {dto.CnpjCpf}");
             }
 
+            // Criar o endereço primeiro se fornecido
+            string? enderecoId = null;
+            if (dto.Endereco != null)
+            {
+                var endereco = new EnderecoEntity
+                {
+                    Cep = dto.Endereco.Cep,
+                    Logradouro = dto.Endereco.Logradouro,
+                    Numero = dto.Endereco.Numero,
+                    Complemento = dto.Endereco.Complemento ?? string.Empty,
+                    Unidade = dto.Endereco.Unidade,
+                    Bairro = dto.Endereco.Bairro,
+                    Localidade = dto.Endereco.Localidade,
+                    Uf = dto.Endereco.Uf,
+                    Estado = dto.Endereco.Estado,
+                    Regiao = dto.Endereco.Regiao,
+                    Referencia = dto.Endereco.Referencia,
+                    IsPrincipal = dto.Endereco.IsPrincipal,
+                    Tipo = dto.Endereco.Tipo.ToString()
+                };
+
+                var enderecoCreated = await _unitOfWork.Enderecos.CreateAsync(endereco);
+                enderecoId = enderecoCreated.Id;
+            }
+
             // Mapear DTO para entidade
             var fornecedor = new Fornecedor
             {
@@ -241,6 +269,7 @@ public class FornecedorService : IFornecedorService
                 CnpjCpf = new CpfCnpj(dto.CnpjCpf),
                 Email = new Email(dto.Email),
                 Telefone = dto.Telefone,
+                EnderecoId = enderecoId, // Usar a referência ao endereço criado
                 InscricaoEstadual = dto.InscricaoEstadual,
                 InscricaoMunicipal = dto.InscricaoMunicipal,
                 Tipo = dto.Tipo,
@@ -257,27 +286,15 @@ public class FornecedorService : IFornecedorService
                 CondicoesPagamento = dto.CondicoesPagamento
             };
 
-            // Mapear endereço se fornecido
-            if (dto.Endereco != null)
-            {
-                fornecedor.Endereco = new Endereco
-                {
-                    Logradouro = dto.Endereco.Logradouro,
-                    Cidade = dto.Endereco.Localidade,
-                    Estado = dto.Endereco.Estado,
-                    Cep = dto.Endereco.Cep,
-                    Complemento = dto.Endereco.Complemento
-                };
-            }
-
             var fornecedorCriado = await _fornecedorRepository.CreateAsync(fornecedor);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidar cache
             await InvalidarCacheFornecedores();
 
             _logger.LogInformation("Fornecedor criado com sucesso: {Id} - {RazaoSocial}", fornecedorCriado.Id, fornecedorCriado.RazaoSocial);
 
-            return MapToDto(fornecedorCriado);
+            return await MapToDtoAsync(fornecedorCriado);
         }
         catch (Exception ex)
         {
@@ -296,6 +313,60 @@ public class FornecedorService : IFornecedorService
                 throw new InvalidOperationException("Fornecedor não encontrado");
             }
 
+            // Atualizar ou criar endereço se dto.Endereco for fornecido
+            if (dto.Endereco != null)
+            {
+                if (!string.IsNullOrEmpty(fornecedor.EnderecoId))
+                {
+                    // Fornecedor já tem endereço - atualizar
+                    var endereco = await _unitOfWork.Enderecos.GetByIdAsync(fornecedor.EnderecoId);
+                    if (endereco != null)
+                    {
+                        Console.WriteLine($"Atualizando endereço existente para fornecedor {fornecedor.RazaoSocial}");
+                        endereco.Cep = dto.Endereco.Cep;
+                        endereco.Logradouro = dto.Endereco.Logradouro;
+                        endereco.Numero = dto.Endereco.Numero;
+                        endereco.Complemento = dto.Endereco.Complemento ?? string.Empty;
+                        endereco.Unidade = dto.Endereco.Unidade;
+                        endereco.Bairro = dto.Endereco.Bairro;
+                        endereco.Localidade = dto.Endereco.Localidade;
+                        endereco.Uf = dto.Endereco.Uf;
+                        endereco.Estado = dto.Endereco.Estado;
+                        endereco.Regiao = dto.Endereco.Regiao;
+                        endereco.Referencia = dto.Endereco.Referencia;
+                        endereco.IsPrincipal = dto.Endereco.IsPrincipal;
+                        endereco.Tipo = dto.Endereco.Tipo.ToString();
+
+                        await _unitOfWork.Enderecos.UpdateAsync(endereco);
+                    }
+                }
+                else
+                {
+                    // Fornecedor não tem endereço - criar novo
+                    Console.WriteLine($"Criando novo endereço para fornecedor {fornecedor.RazaoSocial}");
+                    var novoEndereco = new EnderecoEntity
+                    {
+                        Cep = dto.Endereco.Cep,
+                        Logradouro = dto.Endereco.Logradouro,
+                        Numero = dto.Endereco.Numero,
+                        Complemento = dto.Endereco.Complemento ?? string.Empty,
+                        Unidade = dto.Endereco.Unidade,
+                        Bairro = dto.Endereco.Bairro,
+                        Localidade = dto.Endereco.Localidade,
+                        Uf = dto.Endereco.Uf,
+                        Estado = dto.Endereco.Estado,
+                        Regiao = dto.Endereco.Regiao,
+                        Referencia = dto.Endereco.Referencia,
+                        IsPrincipal = dto.Endereco.IsPrincipal,
+                        Tipo = dto.Endereco.Tipo.ToString()
+                    };
+
+                    await _unitOfWork.Enderecos.CreateAsync(novoEndereco);
+                    fornecedor.EnderecoId = novoEndereco.Id;
+                    Console.WriteLine($"Endereço criado com ID: {novoEndereco.Id} para fornecedor {fornecedor.RazaoSocial}");
+                }
+            }
+
             // Atualizar dados básicos
             fornecedor.AtualizarDados(dto.RazaoSocial, dto.NomeFantasia, dto.Telefone, dto.ContatoPrincipal);
             
@@ -311,19 +382,6 @@ public class FornecedorService : IFornecedorService
             fornecedor.Observacoes = dto.Observacoes;
             fornecedor.Site = dto.Site;
 
-            // Atualizar endereço
-            if (dto.Endereco != null)
-            {
-                fornecedor.Endereco = new Endereco
-                {
-                    Logradouro = dto.Endereco.Logradouro,
-                    Cidade = dto.Endereco.Localidade,
-                    Estado = dto.Endereco.Estado,
-                    Cep = dto.Endereco.Cep,
-                    Complemento = dto.Endereco.Complemento
-                };
-            }
-
             // Atualizar condições comerciais
             fornecedor.AtualizarCondicoesComerciais(dto.PrazoPagamentoPadrao, dto.LimiteCredito, dto.CondicoesPagamento);
             
@@ -331,6 +389,7 @@ public class FornecedorService : IFornecedorService
             fornecedor.AtualizarDadosBancarios(dto.Banco, dto.Agencia, dto.Conta, dto.Pix);
 
             var fornecedorAtualizado = await _fornecedorRepository.UpdateAsync(fornecedor);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidar cache
             await InvalidarCacheFornecedores();
@@ -338,7 +397,7 @@ public class FornecedorService : IFornecedorService
 
             _logger.LogInformation("Fornecedor atualizado com sucesso: {Id} - {RazaoSocial}", id, fornecedor.RazaoSocial);
 
-            return MapToDto(fornecedorAtualizado);
+            return await MapToDtoAsync(fornecedorAtualizado);
         }
         catch (Exception ex)
         {
@@ -566,6 +625,76 @@ public class FornecedorService : IFornecedorService
     }
 
     // Métodos auxiliares de mapeamento
+
+    private async Task<FornecedorDto> MapToDtoAsync(Fornecedor fornecedor)
+    {
+        var enderecoDto = await CarregarEnderecoAsync(fornecedor.EnderecoId);
+        
+        return new FornecedorDto
+        {
+            Id = fornecedor.Id,
+            RazaoSocial = fornecedor.RazaoSocial,
+            NomeFantasia = fornecedor.NomeFantasia,
+            CnpjCpf = fornecedor.CnpjCpf.Valor,
+            Email = fornecedor.Email.Valor,
+            Telefone = fornecedor.Telefone,
+            Endereco = enderecoDto,
+            InscricaoEstadual = fornecedor.InscricaoEstadual,
+            InscricaoMunicipal = fornecedor.InscricaoMunicipal,
+            Tipo = ((int)fornecedor.Tipo).ToString(),
+            Status = ((int)fornecedor.Status).ToString(),
+            Observacoes = fornecedor.Observacoes,
+            ContatoPrincipal = fornecedor.ContatoPrincipal,
+            Site = fornecedor.Site,
+            Banco = fornecedor.Banco,
+            Agencia = fornecedor.Agencia,
+            Conta = fornecedor.Conta,
+            Pix = fornecedor.Pix,
+            PrazoPagamentoPadrao = fornecedor.PrazoPagamentoPadrao,
+            LimiteCredito = fornecedor.LimiteCredito,
+            CondicoesPagamento = fornecedor.CondicoesPagamento,
+            QuantidadeProdutos = fornecedor.ProdutoIds?.Count ?? 0,
+            UltimaCompra = fornecedor.UltimaCompra,
+            TotalComprado = fornecedor.TotalComprado,
+            QuantidadeCompras = fornecedor.QuantidadeCompras,
+            TicketMedio = fornecedor.QuantidadeCompras > 0 ? fornecedor.TotalComprado / fornecedor.QuantidadeCompras : 0,
+            EhFrequente = fornecedor.QuantidadeCompras >= 5,
+            DataCriacao = fornecedor.DataCriacao,
+            DataAtualizacao = fornecedor.DataAtualizacao,
+            Ativo = fornecedor.Ativo
+        };
+    }
+
+    private async Task<EnderecoDto?> CarregarEnderecoAsync(string? enderecoId)
+    {
+        if (string.IsNullOrEmpty(enderecoId))
+            return null;
+
+        var endereco = await _unitOfWork.Enderecos.GetByIdAsync(enderecoId);
+        if (endereco == null)
+            return null;
+
+        return new EnderecoDto
+        {
+            Id = endereco.Id,
+            Logradouro = endereco.Logradouro,
+            Numero = endereco.Numero,
+            Complemento = endereco.Complemento,
+            Unidade = endereco.Unidade,
+            Bairro = endereco.Bairro,
+            Localidade = endereco.Localidade,
+            Uf = endereco.Uf,
+            Estado = endereco.Estado,
+            Regiao = endereco.Regiao,
+            Referencia = endereco.Referencia,
+            Cep = endereco.Cep,
+            IsPrincipal = endereco.IsPrincipal,
+            Tipo = endereco.Tipo,
+            Ativo = endereco.Ativo,
+            DataCriacao = endereco.DataCriacao,
+            DataAtualizacao = endereco.DataAtualizacao
+        };
+    }
 
     private static FornecedorDto MapToDto(Fornecedor fornecedor)
     {

@@ -36,8 +36,15 @@ public class Fornecedor : BaseEntity
     public string Telefone { get; set; } = string.Empty;
 
     /// <summary>
-    /// Endereço do fornecedor
+    /// ID do endereço do fornecedor (referência para a entidade Endereco)
     /// </summary>
+    [BsonElement("enderecoId")]
+    public string? EnderecoId { get; set; }
+
+    /// <summary>
+    /// Endereço do fornecedor (DEPRECATED - usar EnderecoId)
+    /// </summary>
+    [BsonIgnore]
     public Endereco? Endereco { get; set; }
 
     /// <summary>

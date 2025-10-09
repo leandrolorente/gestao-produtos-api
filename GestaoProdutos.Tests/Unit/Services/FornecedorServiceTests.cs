@@ -14,6 +14,7 @@ namespace GestaoProdutos.Tests.Unit.Services;
 public class FornecedorServiceTests
 {
     private readonly Mock<IFornecedorRepository> _fornecedorRepositoryMock;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICacheService> _cacheServiceMock;
     private readonly Mock<ILogger<FornecedorService>> _loggerMock;
     private readonly FornecedorService _fornecedorService;
@@ -21,11 +22,13 @@ public class FornecedorServiceTests
     public FornecedorServiceTests()
     {
         _fornecedorRepositoryMock = new Mock<IFornecedorRepository>();
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
         _cacheServiceMock = new Mock<ICacheService>();
         _loggerMock = new Mock<ILogger<FornecedorService>>();
         
         _fornecedorService = new FornecedorService(
             _fornecedorRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _cacheServiceMock.Object,
             _loggerMock.Object);
     }
@@ -163,6 +166,9 @@ public class FornecedorServiceTests
 
         _fornecedorRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<Fornecedor>()))
             .ReturnsAsync(fornecedorCriado);
+            
+        _unitOfWorkMock.Setup(x => x.SaveChangesAsync())
+            .ReturnsAsync(true);
 
         // Act
         var resultado = await _fornecedorService.CreateFornecedorAsync(dto);
