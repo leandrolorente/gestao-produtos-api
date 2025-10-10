@@ -24,4 +24,5 @@ public interface IContaReceberRepository
     Task<int> GetQuantidadeVencidasAsync();
     Task<IEnumerable<ContaReceber>> GetRecorrentesParaGerarAsync();
     Task<IEnumerable<ContaReceber>> GetByVendedorAsync(string vendedorId);
+    Task<ContaReceber?> GetByVendaIdAsync(string vendaId);
 }

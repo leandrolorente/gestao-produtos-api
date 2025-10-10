@@ -10,10 +10,12 @@ namespace GestaoProdutos.Application.Services;
 public class VendaService : IVendaService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IContaReceberService _contaReceberService;
 
-    public VendaService(IUnitOfWork unitOfWork)
+    public VendaService(IUnitOfWork unitOfWork, IContaReceberService contaReceberService)
     {
         _unitOfWork = unitOfWork;
+        _contaReceberService = contaReceberService;
     }
 
     public async Task<IEnumerable<VendaDto>> GetAllVendasAsync()
@@ -164,6 +166,9 @@ public class VendaService : IVendaService
         }
 
         await _unitOfWork.SaveChangesAsync();
+
+        // Criar conta a receber se a venda for a prazo
+        await CriarContaReceberSeNecessarioAsync(vendaCriada);
 
         return MapToDto(vendaCriada);
     }
@@ -337,6 +342,9 @@ public class VendaService : IVendaService
         var vendaAtualizada = await _unitOfWork.Vendas.UpdateAsync(venda);
         await _unitOfWork.SaveChangesAsync();
 
+        // Atualizar conta a receber se existir
+        await AtualizarContaReceberVendaFinalizadaAsync(id);
+
         return MapToDto(vendaAtualizada);
     }
 
@@ -364,6 +372,9 @@ public class VendaService : IVendaService
 
         var vendaAtualizada = await _unitOfWork.Vendas.UpdateAsync(venda);
         await _unitOfWork.SaveChangesAsync();
+
+        // Cancelar conta a receber se existir
+        await CancelarContaReceberVendaAsync(id);
 
         return MapToDto(vendaAtualizada);
     }
@@ -462,4 +473,103 @@ public class VendaService : IVendaService
             _ => formaPagamento.ToString()
         };
     }
+
+    #region Integração com Contas a Receber
+
+    /// <summary>
+    /// Cria uma conta a receber se a venda for a prazo
+    /// </summary>
+    private async Task CriarContaReceberSeNecessarioAsync(Venda venda)
+    {
+        // Verificar se a venda é a prazo (não é dinheiro nem PIX e tem data de vencimento)
+        if (VendaEhAPrazo(venda))
+        {
+            var createContaDto = new CreateContaReceberDto
+            {
+                Descricao = $"Venda {venda.Numero} - {venda.ClienteNome}",
+                ClienteId = venda.ClienteId,
+                VendaId = venda.Id,
+                NotaFiscal = null, // Pode ser preenchido posteriormente
+                ValorOriginal = venda.Total,
+                Desconto = 0m,
+                DataEmissao = venda.DataVenda,
+                DataVencimento = venda.DataVencimento ?? venda.DataVenda.AddDays(30),
+                EhRecorrente = false,
+                Observacoes = $"Conta gerada automaticamente da venda {venda.Numero}",
+                VendedorId = venda.VendedorId
+            };
+
+            await _contaReceberService.CreateContaReceberAsync(createContaDto);
+        }
+    }
+
+    /// <summary>
+    /// Atualiza a conta a receber quando a venda é finalizada
+    /// </summary>
+    private async Task AtualizarContaReceberVendaFinalizadaAsync(string vendaId)
+    {
+        var conta = await _contaReceberService.GetByVendaIdAsync(vendaId);
+        
+        if (conta != null && conta.Status == "Pendente")
+        {
+            // Marcar como recebida se a forma de pagamento for à vista
+            var venda = await _unitOfWork.Vendas.GetByIdAsync(vendaId);
+            if (venda != null && VendaEhAVista(venda))
+            {
+                var receberDto = new ReceberContaDto
+                {
+                    Valor = conta.ValorOriginal,
+                    FormaPagamento = venda.FormaPagamento,
+                    DataRecebimento = DateTime.UtcNow,
+                    Observacoes = "Recebimento automático - venda finalizada"
+                };
+
+                await _contaReceberService.ReceberContaAsync(conta.Id, receberDto);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Cancela a conta a receber quando a venda é cancelada
+    /// </summary>
+    private async Task CancelarContaReceberVendaAsync(string vendaId)
+    {
+        var conta = await _contaReceberService.GetByVendaIdAsync(vendaId);
+        
+        if (conta != null && conta.Status != "Cancelada")
+        {
+            await _contaReceberService.CancelarContaAsync(conta.Id);
+        }
+    }
+
+    /// <summary>
+    /// Verifica se a venda é a prazo (deve gerar conta a receber)
+    /// </summary>
+    private static bool VendaEhAPrazo(Venda venda)
+    {
+        // Vendas em dinheiro ou PIX são à vista
+        if (venda.FormaPagamento == FormaPagamento.Dinheiro || venda.FormaPagamento == FormaPagamento.PIX)
+            return false;
+
+        // Se tem data de vencimento futura, é a prazo
+        if (venda.DataVencimento.HasValue && venda.DataVencimento.Value.Date > venda.DataVenda.Date)
+            return true;
+
+        // Boleto sempre é a prazo
+        if (venda.FormaPagamento == FormaPagamento.Boleto)
+            return true;
+
+        // Cartão pode ser à vista ou a prazo dependendo da data de vencimento
+        return venda.DataVencimento.HasValue;
+    }
+
+    /// <summary>
+    /// Verifica se a venda é à vista
+    /// </summary>
+    private static bool VendaEhAVista(Venda venda)
+    {
+        return !VendaEhAPrazo(venda);
+    }
+
+    #endregion
 }

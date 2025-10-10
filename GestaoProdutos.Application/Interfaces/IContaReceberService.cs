@@ -24,6 +24,7 @@ public interface IContaReceberService
     Task<decimal> GetTotalRecebidoPorPeriodoAsync(DateTime inicio, DateTime fim);
     Task<int> GetQuantidadeContasVencidasAsync();
     Task<IEnumerable<ContaReceberDto>> GetContasReceberByVendedorAsync(string vendedorId);
+    Task<ContaReceberDto?> GetByVendaIdAsync(string vendaId);
     Task AtualizarStatusContasAsync();
     Task ProcessarContasRecorrentesAsync();
 }

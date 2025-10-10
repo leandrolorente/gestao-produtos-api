@@ -398,6 +398,20 @@ public class ContaReceberService : IContaReceberService
         }
     }
 
+    public async Task<ContaReceberDto?> GetByVendaIdAsync(string vendaId)
+    {
+        try
+        {
+            var conta = await _unitOfWork.ContasReceber.GetByVendaIdAsync(vendaId);
+            return conta != null ? MapToDto(conta) : null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao buscar conta a receber por venda ID: {VendaId}", vendaId);
+            throw;
+        }
+    }
+
     public async Task AtualizarStatusContasAsync()
     {
         try

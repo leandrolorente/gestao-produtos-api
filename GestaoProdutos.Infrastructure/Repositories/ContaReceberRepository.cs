@@ -224,4 +224,11 @@ public class ContaReceberRepository : IContaReceberRepository
             Console.WriteLine($"Aviso: Não foi possível criar índices para contas a receber: {ex.Message}");
         }
     }
+
+    public async Task<ContaReceber?> GetByVendaIdAsync(string vendaId)
+    {
+        return await _collection
+            .Find(x => x.VendaId == vendaId && x.Ativo)
+            .FirstOrDefaultAsync();
+    }
 }

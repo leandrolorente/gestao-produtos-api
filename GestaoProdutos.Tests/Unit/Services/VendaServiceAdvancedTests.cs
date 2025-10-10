@@ -3,6 +3,7 @@ using Moq;
 using FluentAssertions;
 using GestaoProdutos.Application.Services;
 using GestaoProdutos.Application.DTOs;
+using GestaoProdutos.Application.Interfaces;
 using GestaoProdutos.Domain.Interfaces;
 using GestaoProdutos.Domain.Entities;
 using GestaoProdutos.Domain.Enums;
@@ -32,7 +33,7 @@ public class VendaServiceAdvancedTests
         _mockUnitOfWork.Setup(u => u.Produtos).Returns(_mockProdutoRepository.Object);
         _mockUnitOfWork.Setup(u => u.Usuarios).Returns(_mockUsuarioRepository.Object);
 
-        _vendaService = new VendaService(_mockUnitOfWork.Object);
+        _vendaService = new VendaService(_mockUnitOfWork.Object, Mock.Of<IContaReceberService>());
     }
 
     [Fact]
