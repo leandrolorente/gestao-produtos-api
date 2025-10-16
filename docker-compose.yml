@@ -29,6 +29,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__MongoDB: mongodb+srv://gestaoProdutosBD:427931%40%21%40@cluster0.y60kygq.mongodb.net/GestaoProdutosDB?retryWrites=true&w=majority&appName=Cluster0
+      ConnectionStrings__Redis: redis:6379
       MongoDB__DatabaseName: GestaoProdutosDB
       JWT__Secret: sua-chave-super-secreta-para-desenvolvimento-com-pelo-menos-32-caracteres
       JWT__Issuer: GestaoProdutosAPI
@@ -36,10 +37,30 @@ services:
       CORS__AllowedOrigins: http://localhost:4200,http://localhost:4201,https://localhost:4200,https://localhost:4201
     ports:
       - "5000:8080"
+    depends_on:
+      - redis
     networks:
       - gestao-produtos-network
     volumes:
       - ./logs:/app/logs
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: gestao-produtos-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - gestao-produtos-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   # MongoDB Express (Interface web para MongoDB - opcional)
   mongo-express:
@@ -61,6 +82,8 @@ services:
 
 volumes:
   mongodb_data:
+    driver: local
+  redis_data:
     driver: local
 
 networks:
