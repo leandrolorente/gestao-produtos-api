@@ -8,8 +8,12 @@ public class UnitOfWork : IUnitOfWork
     private readonly MongoDbContext _context;
     private IProdutoRepository? _produtos;
     private IClienteRepository? _clientes;
+    private IEnderecoRepository? _enderecos;
     private IUsuarioRepository? _usuarios;
     private IVendaRepository? _vendas;
+    private IFornecedorRepository? _fornecedores;
+    private IContaPagarRepository? _contasPagar;
+    private IContaReceberRepository? _contasReceber;
 
     public UnitOfWork(MongoDbContext context)
     {
@@ -22,11 +26,23 @@ public class UnitOfWork : IUnitOfWork
     public IClienteRepository Clientes => 
         _clientes ??= new ClienteRepository(_context);
 
+    public IEnderecoRepository Enderecos => 
+        _enderecos ??= new EnderecoRepository(_context);
+
     public IUsuarioRepository Usuarios => 
         _usuarios ??= new UsuarioRepository(_context);
 
     public IVendaRepository Vendas => 
         _vendas ??= new VendaRepository(_context);
+
+    public IFornecedorRepository Fornecedores => 
+        _fornecedores ??= new FornecedorRepository(_context);
+
+    public IContaPagarRepository ContasPagar => 
+        _contasPagar ??= new ContaPagarRepository(_context);
+
+    public IContaReceberRepository ContasReceber => 
+        _contasReceber ??= new ContaReceberRepository(_context);
 
     public async Task<bool> SaveChangesAsync()
     {

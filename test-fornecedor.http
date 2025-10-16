@@ -1,0 +1,31 @@
+### Teste Criar Fornecedor
+POST http://localhost:5278/api/fornecedores
+Content-Type: application/json
+
+{
+  "nome": "Fornecedor Teste",
+  "email": "fornecedor@teste.com",
+  "telefone": "(11) 99999-9999",
+  "cnpj": "12.345.678/0001-90",
+  "tipo": 1,
+  "status": 1,
+  "endereco": {
+    "cep": "01310-100",
+    "logradouro": "Av. Paulista",
+    "numero": "1000",
+    "complemento": "Andar 10",
+    "unidade": "Sala 101",
+    "bairro": "Bela Vista",
+    "localidade": "São Paulo",
+    "uf": "SP",
+    "estado": "São Paulo",
+    "regiao": "Sudeste",
+    "referencia": "Próximo ao metrô",
+    "isPrincipal": true,
+    "tipo": 2
+  },
+  "observacoes": "Fornecedor de materiais de escritório"
+}
+
+### Listar Fornecedores
+GET http://localhost:5278/api/fornecedores

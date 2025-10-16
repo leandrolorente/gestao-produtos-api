@@ -7,22 +7,28 @@ using GestaoProdutos.Domain.Enums;
 using GestaoProdutos.Domain.ValueObjects;
 using GestaoProdutos.Domain.Interfaces;
 using Moq;
+using Microsoft.Extensions.Logging;
 
 namespace GestaoProdutos.Tests.Unit.Services;
 
 public class ClienteServiceUpdateTests
 {
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly Mock<ILogger<ClienteService>> _mockLogger;
     private readonly Mock<IClienteRepository> _mockClienteRepository;
+    private readonly Mock<IEnderecoRepository> _mockEnderecoRepository;
     private readonly ClienteService _clienteService;
 
     public ClienteServiceUpdateTests()
     {
         _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockLogger = new Mock<ILogger<ClienteService>>();
         _mockClienteRepository = new Mock<IClienteRepository>();
+        _mockEnderecoRepository = new Mock<IEnderecoRepository>();
         
         _mockUnitOfWork.Setup(u => u.Clientes).Returns(_mockClienteRepository.Object);
-        _clienteService = new ClienteService(_mockUnitOfWork.Object);
+        _mockUnitOfWork.Setup(u => u.Enderecos).Returns(_mockEnderecoRepository.Object);
+        _clienteService = new ClienteService(_mockUnitOfWork.Object, _mockLogger.Object);
     }
 
     [Fact]
@@ -38,7 +44,7 @@ public class ClienteServiceUpdateTests
             Telefone = "(11) 99999-9999",
             CpfCnpj = new CpfCnpj("12345678901"), // CPF
             Tipo = TipoCliente.PessoaFisica,
-            Endereco = new Endereco { Logradouro = "Rua A", Cidade = "São Paulo", Estado = "SP", Cep = "01000-000" }
+            EnderecoId = "endereco1"
         };
 
         var updateDto = new UpdateClienteDto
@@ -47,14 +53,30 @@ public class ClienteServiceUpdateTests
             Email = "empresa@silva.com.br",
             Telefone = "(11) 3333-3333",
             CpfCnpj = "12345678000195", // CNPJ
-            Endereco = "Av. Principal, 100",
-            Cidade = "São Paulo",
-            Estado = "SP",
-            Cep = "01000-001"
+            Endereco = new UpdateEnderecoDto
+            {
+                Logradouro = "Av. Principal",
+                Numero = "100",
+                Localidade = "São Paulo",
+                Uf = "SP",
+                Cep = "01000001"
+            }
+        };
+
+        var enderecoExistente = new EnderecoEntity
+        {
+            Id = "endereco1",
+            Cep = "01000000",
+            Logradouro = "Rua Antiga",
+            Numero = "100",
+            Localidade = "São Paulo",
+            Uf = "SP"
         };
 
         _mockClienteRepository.Setup(r => r.GetByIdAsync(clienteId))
             .ReturnsAsync(clienteExistente);
+        _mockEnderecoRepository.Setup(r => r.GetByIdAsync("endereco1"))
+            .ReturnsAsync(enderecoExistente);
         _mockUnitOfWork.Setup(u => u.SaveChangesAsync()).ReturnsAsync(true);
 
         // Act
@@ -88,7 +110,7 @@ public class ClienteServiceUpdateTests
             Telefone = "(11) 3333-3333",
             CpfCnpj = new CpfCnpj("12345678000195"), // CNPJ
             Tipo = TipoCliente.PessoaJuridica,
-            Endereco = new Endereco { Logradouro = "Av. Principal", Cidade = "São Paulo", Estado = "SP", Cep = "01000-000" }
+            EnderecoId = "endereco1"
         };
 
         var updateDto = new UpdateClienteDto
@@ -97,14 +119,30 @@ public class ClienteServiceUpdateTests
             Email = "maria@teste.com",
             Telefone = "(11) 99999-9999",
             CpfCnpj = "12345678901", // CPF
-            Endereco = "Rua das Flores, 50",
-            Cidade = "Rio de Janeiro",
-            Estado = "RJ",
-            Cep = "20000-000"
+            Endereco = new UpdateEnderecoDto
+            {
+                Logradouro = "Rua das Flores",
+                Numero = "50",
+                Localidade = "Rio de Janeiro",
+                Uf = "RJ",
+                Cep = "20000000"
+            }
+        };
+
+        var enderecoExistente2 = new EnderecoEntity
+        {
+            Id = "endereco1",
+            Cep = "01310100",
+            Logradouro = "Av. Paulista",
+            Numero = "1000",
+            Localidade = "São Paulo",
+            Uf = "SP"
         };
 
         _mockClienteRepository.Setup(r => r.GetByIdAsync(clienteId))
             .ReturnsAsync(clienteExistente);
+        _mockEnderecoRepository.Setup(r => r.GetByIdAsync("endereco1"))
+            .ReturnsAsync(enderecoExistente2);
         _mockUnitOfWork.Setup(u => u.SaveChangesAsync()).ReturnsAsync(true);
 
         // Act
@@ -138,7 +176,7 @@ public class ClienteServiceUpdateTests
             Email = new Email("joao@teste.com"),
             CpfCnpj = new CpfCnpj("12345678901"),
             Tipo = tipoOriginal,
-            Endereco = new Endereco()
+            EnderecoId = "endereco1"
         };
 
         var updateDto = new UpdateClienteDto
@@ -146,14 +184,30 @@ public class ClienteServiceUpdateTests
             Nome = "João Silva Atualizado",
             Email = "joao.novo@teste.com",
             CpfCnpj = "", // CPF/CNPJ vazio
-            Endereco = "Nova Rua",
-            Cidade = "São Paulo",
-            Estado = "SP",
-            Cep = "01000-000"
+            Endereco = new UpdateEnderecoDto
+            {
+                Logradouro = "Nova Rua",
+                Numero = "100",
+                Localidade = "São Paulo",
+                Uf = "SP",
+                Cep = "01000000"
+            }
+        };
+
+        var enderecoExistente3 = new EnderecoEntity
+        {
+            Id = "endereco1",
+            Cep = "01000000",
+            Logradouro = "Rua Antiga",
+            Numero = "100",
+            Localidade = "São Paulo",
+            Uf = "SP"
         };
 
         _mockClienteRepository.Setup(r => r.GetByIdAsync(clienteId))
             .ReturnsAsync(clienteExistente);
+        _mockEnderecoRepository.Setup(r => r.GetByIdAsync("endereco1"))
+            .ReturnsAsync(enderecoExistente3);
         _mockUnitOfWork.Setup(u => u.SaveChangesAsync()).ReturnsAsync(true);
 
         // Act
@@ -199,7 +253,7 @@ public class ClienteServiceUpdateTests
             Email = new Email("teste@teste.com"),
             CpfCnpj = new CpfCnpj("11111111111"),
             Tipo = TipoCliente.PessoaFisica,
-            Endereco = new Endereco()
+            EnderecoId = "endereco1"
         };
 
         var updateDto = new UpdateClienteDto
@@ -207,14 +261,30 @@ public class ClienteServiceUpdateTests
             Nome = "Cliente Atualizado",
             Email = "atualizado@teste.com",
             CpfCnpj = cpfCnpjValue,
-            Endereco = "Rua Teste",
-            Cidade = "Cidade Teste",
-            Estado = "SP",
-            Cep = "00000-000"
+            Endereco = new UpdateEnderecoDto
+            {
+                Logradouro = "Rua Teste",
+                Numero = "100",
+                Localidade = "Cidade Teste",
+                Uf = "SP",
+                Cep = "00000000"
+            }
+        };
+
+        var enderecoExistente4 = new EnderecoEntity
+        {
+            Id = "endereco1",
+            Cep = "00000000",
+            Logradouro = "Rua Antiga",
+            Numero = "100",
+            Localidade = "Cidade Teste",
+            Uf = "SP"
         };
 
         _mockClienteRepository.Setup(r => r.GetByIdAsync(clienteId))
             .ReturnsAsync(clienteExistente);
+        _mockEnderecoRepository.Setup(r => r.GetByIdAsync("endereco1"))
+            .ReturnsAsync(enderecoExistente4);
         _mockUnitOfWork.Setup(u => u.SaveChangesAsync()).ReturnsAsync(true);
 
         // Act

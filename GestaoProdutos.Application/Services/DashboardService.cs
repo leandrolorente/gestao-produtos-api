@@ -1,22 +1,42 @@
 using GestaoProdutos.Application.DTOs;
 using GestaoProdutos.Application.Interfaces;
 using GestaoProdutos.Domain.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace GestaoProdutos.Application.Services;
 
 public class DashboardService : IDashboardService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheService _cache;
+    private readonly ILogger<DashboardService> _logger;
 
-    public DashboardService(IUnitOfWork unitOfWork)
+    public DashboardService(
+        IUnitOfWork unitOfWork, 
+        ICacheService cache,
+        ILogger<DashboardService> logger)
     {
         _unitOfWork = unitOfWork;
+        _cache = cache;
+        _logger = logger;
     }
 
     public async Task<DashboardStatsDto> GetDashboardStatsAsync()
     {
+        const string cacheKey = "gp:dashboard:main";
+        
         try
         {
+            // Tentar buscar do cache primeiro
+            var cachedStats = await _cache.GetAsync<DashboardStatsDto>(cacheKey);
+            if (cachedStats != null)
+            {
+                _logger.LogDebug("Dashboard stats recuperado do cache");
+                return cachedStats;
+            }
+
+            _logger.LogDebug("Cache miss - calculando dashboard stats");
+
             // Buscar dados de produtos
             var produtos = await _unitOfWork.Produtos.GetAllAsync();
             var produtosAtivos = produtos.Where(p => p.Ativo).ToList();
@@ -60,7 +80,7 @@ public class DashboardService : IDashboardService
             // Vendas recentes
             var recentSales = await GetRecentSalesAsync(5);
 
-            return new DashboardStatsDto
+            var dashboardStats = new DashboardStatsDto
             {
                 // Produtos
                 TotalProducts = totalProducts,
@@ -86,9 +106,16 @@ public class DashboardService : IDashboardService
                 TopSellingProducts = topSellingProducts,
                 RecentSales = recentSales
             };
+            
+            // Armazenar no cache por 5 minutos
+            await _cache.SetAsync(cacheKey, dashboardStats, TimeSpan.FromMinutes(5));
+            _logger.LogDebug("Dashboard stats armazenado no cache por 5 minutos");
+            
+            return dashboardStats;
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao obter estatísticas do dashboard");
             throw new Exception($"Erro ao obter estatísticas do dashboard: {ex.Message}");
         }
     }
