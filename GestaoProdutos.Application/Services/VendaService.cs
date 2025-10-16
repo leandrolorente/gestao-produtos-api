@@ -547,20 +547,17 @@ public class VendaService : IVendaService
     /// </summary>
     private static bool VendaEhAPrazo(Venda venda)
     {
-        // Vendas em dinheiro ou PIX são à vista
-        if (venda.FormaPagamento == FormaPagamento.Dinheiro || venda.FormaPagamento == FormaPagamento.PIX)
-            return false;
-
-        // Se tem data de vencimento futura, é a prazo
+        // REGRA PRINCIPAL: Se tem data de vencimento futura (diferente da data da venda), é a prazo
+        // independente da forma de pagamento (PIX, Dinheiro, Transferência, etc.)
         if (venda.DataVencimento.HasValue && venda.DataVencimento.Value.Date > venda.DataVenda.Date)
             return true;
 
-        // Boleto sempre é a prazo
+        // Boleto sempre é a prazo (mesmo sem data de vencimento definida, assume 30 dias)
         if (venda.FormaPagamento == FormaPagamento.Boleto)
             return true;
 
-        // Cartão pode ser à vista ou a prazo dependendo da data de vencimento
-        return venda.DataVencimento.HasValue;
+        // Se não tem data de vencimento ou a data é hoje, é à vista
+        return false;
     }
 
     /// <summary>
