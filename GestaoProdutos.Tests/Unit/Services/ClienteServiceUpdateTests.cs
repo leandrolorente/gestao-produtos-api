@@ -7,12 +7,14 @@ using GestaoProdutos.Domain.Enums;
 using GestaoProdutos.Domain.ValueObjects;
 using GestaoProdutos.Domain.Interfaces;
 using Moq;
+using Microsoft.Extensions.Logging;
 
 namespace GestaoProdutos.Tests.Unit.Services;
 
 public class ClienteServiceUpdateTests
 {
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly Mock<ILogger<ClienteService>> _mockLogger;
     private readonly Mock<IClienteRepository> _mockClienteRepository;
     private readonly Mock<IEnderecoRepository> _mockEnderecoRepository;
     private readonly ClienteService _clienteService;
@@ -20,12 +22,13 @@ public class ClienteServiceUpdateTests
     public ClienteServiceUpdateTests()
     {
         _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockLogger = new Mock<ILogger<ClienteService>>();
         _mockClienteRepository = new Mock<IClienteRepository>();
         _mockEnderecoRepository = new Mock<IEnderecoRepository>();
         
         _mockUnitOfWork.Setup(u => u.Clientes).Returns(_mockClienteRepository.Object);
         _mockUnitOfWork.Setup(u => u.Enderecos).Returns(_mockEnderecoRepository.Object);
-        _clienteService = new ClienteService(_mockUnitOfWork.Object);
+        _clienteService = new ClienteService(_mockUnitOfWork.Object, _mockLogger.Object);
     }
 
     [Fact]

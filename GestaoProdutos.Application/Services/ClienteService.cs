@@ -4,16 +4,19 @@ using GestaoProdutos.Domain.Entities;
 using GestaoProdutos.Domain.Enums;
 using GestaoProdutos.Domain.Interfaces;
 using GestaoProdutos.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace GestaoProdutos.Application.Services;
 
 public class ClienteService : IClienteService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<ClienteService> _logger;
 
-    public ClienteService(IUnitOfWork unitOfWork)
+    public ClienteService(IUnitOfWork unitOfWork, ILogger<ClienteService> logger)
     {
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<ClienteDto>> GetAllClientesAsync()
@@ -26,7 +29,7 @@ public class ClienteService : IClienteService
             foreach (var cliente in clientes)
             {
                 // Log para debug
-                Console.WriteLine($"Cliente: {cliente.Id}, Nome: {cliente.Nome}, Email: {cliente.Email?.Valor}, Telefone: {cliente.Telefone}, EnderecoId: {cliente.EnderecoId}");
+                _logger.LogDebug($"Cliente: {cliente.Id}, Nome: {cliente.Nome}, Email: {cliente.Email?.Valor}, Telefone: {cliente.Telefone}, EnderecoId: {cliente.EnderecoId}");
                 clientesDto.Add(await MapToDtoAsync(cliente));
             }
             
@@ -34,7 +37,7 @@ public class ClienteService : IClienteService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erro em GetAllClientesAsync: {ex.Message}");
+            _logger.LogError(ex, "Erro em GetAllClientesAsync: {Message}", ex.Message);
             throw;
         }
     }
@@ -139,7 +142,7 @@ public class ClienteService : IClienteService
                 var endereco = await _unitOfWork.Enderecos.GetByIdAsync(cliente.EnderecoId);
                 if (endereco != null)
                 {
-                    Console.WriteLine($"Atualizando endereço existente para cliente {cliente.Nome}");
+                    _logger.LogDebug("Atualizando endereço existente para cliente {ClienteNome}", cliente.Nome);
                     endereco.Cep = dto.Endereco.Cep;
                     endereco.Logradouro = dto.Endereco.Logradouro;
                     endereco.Numero = dto.Endereco.Numero;
@@ -160,7 +163,7 @@ public class ClienteService : IClienteService
             else
             {
                 // Cliente não tem endereço - criar novo
-                Console.WriteLine($"Criando novo endereço para cliente {cliente.Nome}");
+                _logger.LogDebug("Criando novo endereço para cliente {ClienteNome}", cliente.Nome);
                 var novoEndereco = new EnderecoEntity
                 {
                     Cep = dto.Endereco.Cep,
@@ -180,7 +183,7 @@ public class ClienteService : IClienteService
 
                 await _unitOfWork.Enderecos.CreateAsync(novoEndereco);
                 cliente.EnderecoId = novoEndereco.Id;
-                Console.WriteLine($"Endereço criado com ID: {novoEndereco.Id} para cliente {cliente.Nome}");
+                _logger.LogDebug("Endereço criado com ID: {EnderecoId} para cliente {ClienteNome}", novoEndereco.Id, cliente.Nome);
             }
         }
 
@@ -233,11 +236,11 @@ public class ClienteService : IClienteService
         
         if (!string.IsNullOrEmpty(cliente.EnderecoId))
         {
-            Console.WriteLine($"Buscando endereço para cliente {cliente.Nome} com EnderecoId: {cliente.EnderecoId}");
+            _logger.LogDebug("Buscando endereço para cliente {ClienteNome} com EnderecoId: {EnderecoId}", cliente.Nome, cliente.EnderecoId);
             var endereco = await _unitOfWork.Enderecos.GetByIdAsync(cliente.EnderecoId);
             if (endereco != null)
             {
-                Console.WriteLine($"Endereço encontrado: {endereco.Logradouro}, {endereco.Localidade}");
+                _logger.LogDebug("Endereço encontrado: {Logradouro}, {Localidade}", endereco.Logradouro, endereco.Localidade);
                 enderecoDto = new EnderecoDto
                 {
                     Id = endereco.Id,
@@ -261,12 +264,12 @@ public class ClienteService : IClienteService
             }
             else
             {
-                Console.WriteLine($"Endereço não encontrado para EnderecoId: {cliente.EnderecoId}");
+                _logger.LogDebug("Endereço não encontrado para EnderecoId: {EnderecoId}", cliente.EnderecoId);
             }
         }
         else
         {
-            Console.WriteLine($"Cliente {cliente.Nome} não possui EnderecoId");
+            _logger.LogDebug("Cliente {ClienteNome} não possui EnderecoId", cliente.Nome);
         }
 
         return new ClienteDto

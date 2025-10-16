@@ -32,14 +32,12 @@ namespace GestaoProdutos.Application.Services
                 var cachedValue = await _distributedCache.GetStringAsync(key);
                 if (string.IsNullOrEmpty(cachedValue))
                 {
-                    _logger.LogDebug($"❌ Cache MISS: {key}");
-                    Console.WriteLine($"❌ [REDIS MISS] Chave não encontrada: {key}");
+                    _logger.LogDebug($"❌ [REDIS MISS] Chave não encontrada: {key}");
                     return null;
                 }
 
                 var result = JsonSerializer.Deserialize<T>(cachedValue, _jsonOptions);
-                _logger.LogDebug($"✅ Cache HIT: {key}");
-                Console.WriteLine($"✅ [REDIS HIT] Dados encontrados no cache: {key}");
+                _logger.LogDebug($"✅ [REDIS HIT] Dados encontrados no cache: {key}");
                 return result;
             }
             catch (Exception ex)
@@ -62,8 +60,7 @@ namespace GestaoProdutos.Application.Services
                     options.SetAbsoluteExpiration(TimeSpan.FromMinutes(30)); // Padrão 30 min
 
                 await _distributedCache.SetStringAsync(key, jsonValue, options);
-                _logger.LogDebug($"✅ Cache SET: {key} (TTL: {expiry?.TotalMinutes ?? 30} min)");
-                Console.WriteLine($"💾 [REDIS SET] Dados salvos no cache: {key} (TTL: {expiry?.TotalMinutes ?? 30:F0} min)");
+                _logger.LogDebug($"💾 [REDIS SET] Dados salvos no cache: {key} (TTL: {expiry?.TotalMinutes ?? 30:F0} min)");
             }
             catch (Exception ex)
             {

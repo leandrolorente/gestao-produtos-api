@@ -41,7 +41,6 @@ public class FornecedorService : IFornecedorService
             if (cached != null)
             {
                 _logger.LogInformation("✅ [CACHE HIT] Fornecedores retornados do cache");
-                Console.WriteLine("✅ [REDIS HIT] Fornecedores encontrados no cache");
                 return cached;
             }
 
@@ -53,7 +52,6 @@ public class FornecedorService : IFornecedorService
             await _cacheService.SetAsync(cacheKey, resultado, TimeSpan.FromMinutes(5));
             
             _logger.LogInformation("🗄️ [DATABASE] Fornecedores buscados no MongoDB e salvos no cache");
-            Console.WriteLine("💾 [REDIS SET] Fornecedores salvos no cache");
 
             return resultado;
         }
